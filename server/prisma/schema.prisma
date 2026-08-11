@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  HR
+  EMPLOYEE
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(EMPLOYEE)
+  createdAt DateTime @map("created_at") @default(now())
+  updatedAt DateTime @map("updated_at") @updatedAt
+
+  employee          Employee?
+  reviewedRequests  LeaveRequest[] @relation("ReviewedBy")
+
+  @@map("users")
+}
+
+model Employee {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id") @unique
+  name       String
+  position   String
+  department String
+  joinDate   DateTime @map("join_date")
+  phone      String?
+  createdAt  DateTime @map("created_at") @default(now())
+  updatedAt  DateTime @map("updated_at") @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leaveRequests LeaveRequest[]
+
+  @@map("employees")
+}
+
+model LeaveRequest {
+  id         String      @id @default(cuid())
+  employeeId String      @map("employee_id")
+  startDate  DateTime    @map("start_date")
+  endDate    DateTime    @map("end_date")
+  reason     String?
+  status     LeaveStatus @default(PENDING)
+  reviewedBy String?     @map("reviewed_by")
+  createdAt  DateTime    @map("created_at") @default(now())
+  updatedAt  DateTime    @map("updated_at") @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewer User?    @relation("ReviewedBy", fields: [reviewedBy], references: [id], onDelete: SetNull)
+
+  @@index([employeeId])
+  @@index([status])
+  @@map("leave_requests")
+}
