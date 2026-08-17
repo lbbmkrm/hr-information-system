@@ -8,7 +8,7 @@ interface AuthRequest extends Request {
     user?: jwtPayload;
 }
 
-const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction):void =>{
+const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) =>{
     try{
         const authHeader: string|undefined = req.headers.authorization;
         if(!authHeader || !authHeader.startsWith("Bearer ")){
@@ -23,13 +23,22 @@ const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction):voi
         next();
     }catch(e){
         if(e instanceof AppError){
-            return next(e);
+            return res.status(e.code).json({
+                status : 'error',
+                message : e.message
+            });
         }
         if(e instanceof jwt.JsonWebTokenError){
-            return next(new AppError('Invalid or expired token', 401));
+            return res.status(401).json({
+                status : 'error',
+                message : 'Unauthorized: Invalid token',
+            })
         }
-        console.error(e);
-        return next(new AppError('Internal Server Error', 500));
+
+        return res.status(500).json({
+            status : 'error',
+            error : e
+        });
     }
 }
 

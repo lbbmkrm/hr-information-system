@@ -1,13 +1,8 @@
 import bcrypt from 'bcrypt';
 import AppError from "../utils/AppError.js";
 import UserRepository from "../repositories/user.repository.js";
-import type {RegisterUserData, UserResponse, LoginResponse} from "../types/userTypes.js";
+import type {RegisterUserData, UserResponse, LoginPayload, LoginResponse} from "../types/userTypes.js";
 import {jwtSignature} from "../lib/jwt.js";
-
-interface LoginPayload {
-    email: string;
-    password: string;
-}
 
 export default class AuthService {
     private userRepository: UserRepository;
