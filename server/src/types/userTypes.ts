@@ -1,4 +1,4 @@
-import {Role} from "../generated/prisma/index.js"
+import { Role } from "../generated/prisma/index.js";
 export interface RegisterUserData {
     email: string;
     password: string;
@@ -19,8 +19,8 @@ export interface LoginResponse {
         id: string;
         email: string;
         role: Role;
-    },
-    token : string;
+    };
+    token: string;
 }
 
 export interface LoginPayload {

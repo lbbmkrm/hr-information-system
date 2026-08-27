@@ -2,18 +2,18 @@ export interface CreateEmployeeData {
     name: string;
     position: string;
     department: string;
-    joinDate : Date;
+    joinDate: Date;
     phone: string | null;
-    userId: string|null;
+    userId: string | null;
 }
 
 export interface UpdateEmployeeData {
     name: string;
     position: string;
     department: string;
-    joinDate : Date;
+    joinDate: Date;
     phone: string | null;
-    userId: string|null;
+    userId: string | null;
 }
 
 export interface EmployeeResponse {
@@ -23,7 +23,7 @@ export interface EmployeeResponse {
     department: string;
     joinDate: Date;
     phone: string | null;
-    userId: string|null;
+    userId: string | null;
 }
 
 export interface EmployeeFilter {

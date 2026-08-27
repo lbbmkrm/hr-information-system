@@ -1,45 +1,46 @@
-import {Router} from 'express';
+import { Router } from "express";
 import authMiddleware from "../middlewares/auth.middleware.js";
-import {validateBody, validatePathParams, validateQueryParams} from "../middlewares/validate.middleware.js";
-import {CreateEmployeeSchema, UpdateEmployeeSchema, GetEmployeeSchema, IdParamsSchema} from "../validators/employee.validator.js";
+import {
+    validateBody,
+    validatePathParams,
+    validateQueryParams,
+} from "../middlewares/validate.middleware.js";
+import {
+    CreateEmployeeSchema,
+    UpdateEmployeeSchema,
+    GetEmployeeSchema,
+    IdParamsSchema,
+} from "../validators/employee.validator.js";
 import EmployeeController from "../controllers/employee.controller.js";
 
 const router = Router();
 const employeeController = new EmployeeController();
+router.get("/", authMiddleware, validateQueryParams(GetEmployeeSchema), employeeController.index);
+
 router.get(
-    '/',
-    authMiddleware,
-    validateQueryParams(GetEmployeeSchema),
-    employeeController.index
-);
-
-router.get('/user/:id',
+    "/user/:id",
     authMiddleware,
     validatePathParams(IdParamsSchema),
-    employeeController.showByUser
+    employeeController.showByUser,
 );
 
-router.get('/:id', authMiddleware,
-    validatePathParams(IdParamsSchema),
-    employeeController.show
-);
+router.get("/:id", authMiddleware, validatePathParams(IdParamsSchema), employeeController.show);
 
-router.post('/', authMiddleware,
-    validateBody(CreateEmployeeSchema),
-    employeeController.store
-);
+router.post("/", authMiddleware, validateBody(CreateEmployeeSchema), employeeController.store);
 
-router.patch('/:id',
+router.patch(
+    "/:id",
     authMiddleware,
     validatePathParams(IdParamsSchema),
     validateBody(UpdateEmployeeSchema),
-    employeeController.edit
+    employeeController.edit,
 );
 
-router.delete('/:id',
+router.delete(
+    "/:id",
     authMiddleware,
     validatePathParams(IdParamsSchema),
-    employeeController.destroy
+    employeeController.destroy,
 );
 
 export default router;

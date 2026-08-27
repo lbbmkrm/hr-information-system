@@ -1,56 +1,55 @@
-import prisma from './../lib/prisma.js';
-import type {User, Role} from './../generated/prisma/index.js';
-import type {RegisterUserData, UpdateUserData} from "../types/userTypes.js";
-
+import prisma from "./../lib/prisma.js";
+import type { User, Role } from "./../generated/prisma/index.js";
+import type { RegisterUserData, UpdateUserData } from "../types/userTypes.js";
 
 export default class UserRepository {
     async create(data: RegisterUserData): Promise<User> {
         return prisma.user.create({
-            data: data
-        })
+            data: data,
+        });
     }
 
     async findAll(filter?: Role): Promise<User[]> {
         if (!filter) {
-            return prisma.user.findMany()
+            return prisma.user.findMany();
         }
         return prisma.user.findMany({
             where: {
-                role: filter
-            }
-        })
+                role: filter,
+            },
+        });
     }
 
-    async findById(id: string): Promise<User|null> {
+    async findById(id: string): Promise<User | null> {
         return prisma.user.findUnique({
             where: {
-                id: id
-            }
-        })
+                id: id,
+            },
+        });
     }
 
-    async findByEmail(email: string): Promise<User|null> {
+    async findByEmail(email: string): Promise<User | null> {
         return prisma.user.findUnique({
             where: {
-                email: email
-            }
-        })
+                email: email,
+            },
+        });
     }
 
-    async update(id: string, data: UpdateUserData): Promise<User|null> {
+    async update(id: string, data: UpdateUserData): Promise<User | null> {
         return prisma.user.update({
             where: {
-                id:id
+                id: id,
             },
-            data : data
-        })
+            data: data,
+        });
     }
 
     async delete(id: string): Promise<void> {
-         await prisma.user.delete({
+        await prisma.user.delete({
             where: {
-                id:id
-            }
-        })
+                id: id,
+            },
+        });
     }
 }
