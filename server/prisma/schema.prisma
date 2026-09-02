@@ -23,7 +23,7 @@ enum LeaveStatus {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid(2))
   email     String   @unique
   password  String
   role      Role     @default(EMPLOYEE)
@@ -37,7 +37,7 @@ model User {
 }
 
 model Employee {
-  id         String   @id @default(cuid())
+  id         String   @id @default(cuid(2))
   userId     String?   @map("user_id") @unique
   name       String
   position   String
@@ -54,7 +54,7 @@ model Employee {
 }
 
 model LeaveRequest {
-  id         String      @id @default(cuid())
+  id         String      @id @default(cuid(2))
   employeeId String      @map("employee_id")
   startDate  DateTime    @map("start_date")
   endDate    DateTime    @map("end_date")

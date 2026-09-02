@@ -4,22 +4,15 @@ import type {
     CreateLeaveRequest,
     UpdateLeaveRequest,
     UpdateStatusLeaveRequest,
-    LeaveRequestFilter,
+    LeaveRequestFilter, LeaveRequestResponse,
 } from "../types/leavelRequestTypes.js";
 
 export default class LeaveRequestRepository {
-    async create(data: CreateLeaveRequest): Promise<LeaveRequest> {
+    async create(data: CreateLeaveRequest): Promise<LeaveRequestResponse> {
         return prisma.leaveRequest.create({
             data: data,
             include: {
-                employee: {
-                    select: {
-                        id: true,
-                        name: true,
-                        position: true,
-                        department: true,
-                    },
-                },
+                employee: true
             },
         });
     }
@@ -40,39 +33,25 @@ export default class LeaveRequestRepository {
         return prisma.leaveRequest.findMany();
     }
 
-    async findByEmployee(id: string): Promise<LeaveRequest[] | null> {
+    async findByEmployee(id: string): Promise<LeaveRequestResponse[] | null> {
         return prisma.leaveRequest.findMany({
             where: {
                 employeeId: id,
             },
             include: {
-                employee: {
-                    select: {
-                        id: true,
-                        name: true,
-                        position: true,
-                        department: true,
-                    },
-                },
+                employee: true,
             },
         });
     }
 
-    async findById(id: string): Promise<LeaveRequest | null> {
+    async findById(id: string): Promise<LeaveRequestResponse|null>{
         return prisma.leaveRequest.findUnique({
             where: {
                 id: id,
             },
             include: {
-                employee: {
-                    select: {
-                        id: true,
-                        name: true,
-                        position: true,
-                        department: true,
-                    },
-                },
-            },
+                employee : true
+            }
         });
     }
 

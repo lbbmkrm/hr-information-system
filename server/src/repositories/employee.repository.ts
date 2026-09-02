@@ -33,7 +33,7 @@ export default class EmployeeRepository {
     async findByUserId(userId: string): Promise<Employee | null> {
         return prisma.employee.findUnique({
             where: {
-                id: userId,
+                userId: userId,
             },
         });
     }

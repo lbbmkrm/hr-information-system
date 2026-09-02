@@ -6,6 +6,7 @@ import type {
     EmployeeFilter,
     UpdateEmployeeData,
 } from "../types/employeeTypes.js";
+import type {jwtPayload} from "../lib/jwt.js";
 
 export default class EmployeeController {
     private employeeService: EmployeeService;
@@ -17,6 +18,7 @@ export default class EmployeeController {
     public index = async (req: Request, res: Response): Promise<Response> => {
         try {
             const employees = await this.employeeService.getAllEmployees(
+                req.user as jwtPayload,
                 req.validatedQuery as EmployeeFilter,
             );
             return res.status(200).json({
@@ -40,7 +42,7 @@ export default class EmployeeController {
 
     public show = async (req: Request, res: Response): Promise<Response> => {
         try {
-            const employee = await this.employeeService.getEmployeeById(req.params.id as string);
+            const employee = await this.employeeService.getEmployeeById(req.user as jwtPayload, req.params.id as string);
             return res.status(200).json({
                 status: "success",
                 message: "Retrieved employee data successfully",
@@ -87,6 +89,7 @@ export default class EmployeeController {
     public store = async (req: Request, res: Response): Promise<Response> => {
         try {
             const employee = await this.employeeService.addEmployee(
+                req.user as jwtPayload,
                 req.validatedBody as CreateEmployeeData,
             );
             return res.status(201).json({
@@ -110,6 +113,7 @@ export default class EmployeeController {
     public edit = async (req: Request, res: Response): Promise<Response> => {
         try {
             const employee = await this.employeeService.updateEmployee(
+                req.user as jwtPayload,
                 req.params.id as string,
                 req.validatedBody as UpdateEmployeeData,
             );
@@ -134,7 +138,7 @@ export default class EmployeeController {
 
     public destroy = async (req: Request, res: Response): Promise<Response> => {
         try {
-            await this.employeeService.deleteEmployee(req.params.id as string);
+            await this.employeeService.deleteEmployee(req.user as jwtPayload, req.params.id as string);
             return res.status(200).json({
                 status: "success",
                 message: "Deleted employee data successfully",

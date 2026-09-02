@@ -7,6 +7,8 @@ import type {
     EmployeeResponse,
     EmployeeFilter,
 } from "../types/employeeTypes.js";
+import type {jwtPayload} from "../lib/jwt.js";
+import EmployeePolicy from "../policies/employee.policy.js";
 
 export default class EmployeeService {
     private employeeRepository: EmployeeRepository;
@@ -17,7 +19,18 @@ export default class EmployeeService {
         this.userRepository = new UserRepository();
     }
 
-    async addEmployee(data: CreateEmployeeData): Promise<EmployeeResponse> {
+    private async getEmployee(id:string):Promise<EmployeeResponse> {
+        const employee = await this.employeeRepository.findById(id);
+        if(!employee){
+            throw new AppError("No employee found", 404);
+        }
+        return employee;
+    }
+
+    async addEmployee(user: jwtPayload, data: CreateEmployeeData): Promise<EmployeeResponse> {
+        if(!EmployeePolicy.create(user)){
+            throw new AppError('Unauthorized', 403);
+        }
         if (data.userId) {
             const user = await this.userRepository.findById(data.userId);
             if (!user) {
@@ -31,14 +44,17 @@ export default class EmployeeService {
         return this.employeeRepository.create(data);
     }
 
-    async getAllEmployees(filter: EmployeeFilter): Promise<EmployeeResponse[]> {
+    async getAllEmployees(user:jwtPayload, filter: EmployeeFilter): Promise<EmployeeResponse[]> {
+        if(!EmployeePolicy.viewAny(user)){
+            throw new AppError('Unauthorized', 403);
+        }
         return this.employeeRepository.findAll(filter);
     }
 
-    async getEmployeeById(id: string): Promise<EmployeeResponse> {
-        const employee = await this.employeeRepository.findById(id);
-        if (!employee) {
-            throw new AppError("Employee not found", 404);
+    async getEmployeeById(user:jwtPayload, id: string): Promise<EmployeeResponse> {
+        const employee = await this.getEmployee(id);
+        if(!EmployeePolicy.view(user, employee)){
+            throw new AppError('Unauthorized', 403);
         }
         return employee;
     }
@@ -51,13 +67,19 @@ export default class EmployeeService {
         return employee;
     }
 
-    async updateEmployee(id: string, data: UpdateEmployeeData): Promise<EmployeeResponse> {
-        await this.getEmployeeById(id);
+    async updateEmployee(user:jwtPayload, id: string, data: UpdateEmployeeData): Promise<EmployeeResponse> {
+        const employee = await this.getEmployee(id);
+        if(!EmployeePolicy.update(user, employee)){
+            throw new AppError("Employee not found", 403);
+        }
         return this.employeeRepository.update(id, data);
     }
 
-    async deleteEmployee(id: string): Promise<void> {
-        await this.getEmployeeById(id);
+    async deleteEmployee(user:jwtPayload, id: string): Promise<void> {
+        if(!EmployeePolicy.delete(user)){
+            throw new AppError("Employee not found", 403);
+        }
+        await this.getEmployee(id);
         await this.employeeRepository.delete(id);
         return;
     }

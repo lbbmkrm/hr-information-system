@@ -24,6 +24,8 @@ export interface EmployeeResponse {
     joinDate: Date;
     phone: string | null;
     userId: string | null;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface EmployeeFilter {

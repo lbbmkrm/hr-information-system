@@ -42,7 +42,6 @@ export const validateQueryParams = (schema: ZodType) => {
             next();
         } catch (err) {
             if (err instanceof ZodError) {
-                console.log(err);
                 return res.status(400).json({
                     status: "error",
                     message: err.issues[0]?.message,
