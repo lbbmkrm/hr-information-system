@@ -15,7 +15,8 @@ import EmployeeController from "../controllers/employee.controller.js";
 
 const router = Router();
 const employeeController = new EmployeeController();
-router.get("/", authMiddleware, validateQueryParams(GetEmployeeSchema), employeeController.index);
+router.use(authMiddleware);
+router.get("/", validateQueryParams(GetEmployeeSchema), employeeController.index);
 
 router.get(
     "/user/:id",
@@ -24,23 +25,17 @@ router.get(
     employeeController.showByUser,
 );
 
-router.get("/:id", authMiddleware, validatePathParams(IdParamsSchema), employeeController.show);
+router.get("/:id", validatePathParams(IdParamsSchema), employeeController.show);
 
-router.post("/", authMiddleware, validateBody(CreateEmployeeSchema), employeeController.store);
+router.post("/", validateBody(CreateEmployeeSchema), employeeController.store);
 
 router.patch(
     "/:id",
-    authMiddleware,
     validatePathParams(IdParamsSchema),
     validateBody(UpdateEmployeeSchema),
     employeeController.edit,
 );
 
-router.delete(
-    "/:id",
-    authMiddleware,
-    validatePathParams(IdParamsSchema),
-    employeeController.destroy,
-);
+router.delete("/:id", validatePathParams(IdParamsSchema), employeeController.destroy);
 
 export default router;

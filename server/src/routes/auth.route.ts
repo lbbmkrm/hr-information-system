@@ -6,6 +6,5 @@ import AuthController from "../controllers/auth.controller.js";
 const router = Router();
 const authController = new AuthController();
 
-router.post("/register", validateBody(RegisterSchema), authController.register);
 router.post("/login", validateBody(LoginSchema), authController.login);
 export default router;

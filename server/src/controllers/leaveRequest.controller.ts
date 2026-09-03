@@ -8,7 +8,7 @@ import type {
     UpdateStatusLeaveRequest,
 } from "../types/leavelRequestTypes.js";
 import AppError from "../utils/AppError.js";
-import type {jwtPayload} from "../lib/jwt.js";
+import type { jwtPayload } from "../lib/jwt.js";
 
 export default class LeaveRequestController {
     private leaveRequestService: LeaveRequestService;
@@ -114,7 +114,7 @@ export default class LeaveRequestController {
             return res.status(500).json({
                 status: "error",
                 message: "Something went wrong",
-                error: err
+                error: err,
             });
         }
     };
@@ -176,7 +176,10 @@ export default class LeaveRequestController {
 
     public destroy = async (req: Request, res: Response): Promise<Response> => {
         try {
-            await this.leaveRequestService.deleteLeaveRequest(req.user as jwtPayload, req.params.id as string);
+            await this.leaveRequestService.deleteLeaveRequest(
+                req.user as jwtPayload,
+                req.params.id as string,
+            );
             return res.status(200).json({
                 status: "success",
                 message: "Deleted Leave Request successfully",

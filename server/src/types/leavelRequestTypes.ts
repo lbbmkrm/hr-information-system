@@ -1,5 +1,5 @@
-import {LeaveStatus, Prisma} from "../generated/prisma/index.js";
-import type {EmployeeResponse} from "./employeeTypes.js";
+import { LeaveStatus, Prisma } from "../generated/prisma/index.js";
+import type { EmployeeResponse } from "./employeeTypes.js";
 
 export interface CreateLeaveRequest {
     employeeId: string;
@@ -25,7 +25,7 @@ export interface LeaveRequestFilter {
 }
 
 type LeaveRequestWithEmployee = Prisma.LeaveRequestGetPayload<{
-    include: { employee: true }
+    include: { employee: true };
 }>;
 
 export type LeaveRequestResponse = LeaveRequestWithEmployee;

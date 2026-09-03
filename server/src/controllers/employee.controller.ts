@@ -6,7 +6,7 @@ import type {
     EmployeeFilter,
     UpdateEmployeeData,
 } from "../types/employeeTypes.js";
-import type {jwtPayload} from "../lib/jwt.js";
+import type { jwtPayload } from "../lib/jwt.js";
 
 export default class EmployeeController {
     private employeeService: EmployeeService;
@@ -42,7 +42,10 @@ export default class EmployeeController {
 
     public show = async (req: Request, res: Response): Promise<Response> => {
         try {
-            const employee = await this.employeeService.getEmployeeById(req.user as jwtPayload, req.params.id as string);
+            const employee = await this.employeeService.getEmployeeById(
+                req.user as jwtPayload,
+                req.params.id as string,
+            );
             return res.status(200).json({
                 status: "success",
                 message: "Retrieved employee data successfully",
@@ -138,7 +141,10 @@ export default class EmployeeController {
 
     public destroy = async (req: Request, res: Response): Promise<Response> => {
         try {
-            await this.employeeService.deleteEmployee(req.user as jwtPayload, req.params.id as string);
+            await this.employeeService.deleteEmployee(
+                req.user as jwtPayload,
+                req.params.id as string,
+            );
             return res.status(200).json({
                 status: "success",
                 message: "Deleted employee data successfully",

@@ -4,7 +4,8 @@ import type {
     CreateLeaveRequest,
     UpdateLeaveRequest,
     UpdateStatusLeaveRequest,
-    LeaveRequestFilter, LeaveRequestResponse,
+    LeaveRequestFilter,
+    LeaveRequestResponse,
 } from "../types/leavelRequestTypes.js";
 
 export default class LeaveRequestRepository {
@@ -12,7 +13,7 @@ export default class LeaveRequestRepository {
         return prisma.leaveRequest.create({
             data: data,
             include: {
-                employee: true
+                employee: true,
             },
         });
     }
@@ -44,14 +45,14 @@ export default class LeaveRequestRepository {
         });
     }
 
-    async findById(id: string): Promise<LeaveRequestResponse|null>{
+    async findById(id: string): Promise<LeaveRequestResponse | null> {
         return prisma.leaveRequest.findUnique({
             where: {
                 id: id,
             },
             include: {
-                employee : true
-            }
+                employee: true,
+            },
         });
     }
 
