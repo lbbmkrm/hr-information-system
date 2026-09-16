@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { type Employee, getEmployees } from "../api/employeeApi.ts";
+import {  getEmployees } from "../api/employeeApi.ts";
 import { jwtDecode } from "jwt-decode";
 import type { jwtPayload } from "../api/authApi.ts";
+import type {Employee} from "../types/employee.ts";
+import {Link} from "react-router-dom";
 
 export default function EmployeeList() {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -44,9 +46,9 @@ export default function EmployeeList() {
             <div className="mb-4 flex items-center justify-between">
                 <h1 className="text-xl font-bold">Daftar Karyawan</h1>
                 {(user.role === "ADMIN" || user.role === "HR") && (
-                    <button className="rounded bg-blue-500 px-4 py-2 text-white">
+                    <Link to={"/employees/new"} className="rounded bg-blue-500 px-4 py-2 text-white">
                         + Tambah Karyawan
-                    </button>
+                    </Link>
                 )}
             </div>
 
@@ -57,6 +59,7 @@ export default function EmployeeList() {
                         <th className="p-3">Posisi</th>
                         <th className="p-3">Departemen</th>
                         <th className="p-3">Tanggal Bergabung</th>
+                        <th className="p-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,6 +74,11 @@ export default function EmployeeList() {
                                     month: "long",
                                     day: "numeric",
                                 })}
+                            </td>
+                            <td className="p-3">
+                                <button className={"text-sky-600 hover:underline"}>
+                                    <Link to={`${employee.id}`} state={employee.id}>detail</Link>
+                                </button>
                             </td>
                         </tr>
                     ))}

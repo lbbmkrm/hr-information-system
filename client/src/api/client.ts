@@ -12,6 +12,14 @@ apiClient.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
+
+    console.log("→ Request:", {
+        method: config.method?.toUpperCase(),
+        url: config.url,
+        baseURL: config.baseURL,
+        params: config.params,   // query string (?key=value)
+        data: config.data,       // body (POST/PUT/PATCH)
+    });
     return config;
 });
 

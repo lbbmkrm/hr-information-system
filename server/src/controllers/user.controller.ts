@@ -16,6 +16,7 @@ export default class UserController {
                 req.user as jwtPayload,
                 req.validatedQuery as GetUsersFilter,
             );
+
             return res.status(200).json({
                 status: "success",
                 message: "Retrieved users data successfully",

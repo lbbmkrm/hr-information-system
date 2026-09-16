@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import request from "supertest";
 import { createId } from "@paralleldrive/cuid2";
+import { createEmployee } from "../factories/index.js";
 
 import app from "../../src/app.js";
 import prisma from "../prisma.js";
@@ -85,6 +86,38 @@ describe("User API", () => {
 
             const response = await request(app)
                 .get("/api/users")
+                .set("Authorization", `Bearer ${token}`);
+
+            expect(response.status).toBe(403);
+        });
+    });
+
+    describe("GET /api/users?unassigned=true", () => {
+        it("should return only users without an employee record", async () => {
+            const { token } = await createUserWithToken({ role: Role.ADMIN });
+
+            const { user: unassignedUser } = await createUserWithToken();
+            const { user: assignedUser } = await createUserWithToken();
+            await createEmployee({
+                user: { connect: { id: assignedUser.id } },
+            });
+
+            const response = await request(app)
+                .get("/api/users?unassigned=true")
+                .set("Authorization", `Bearer ${token}`);
+
+            expect(response.status).toBe(200);
+
+            const resultIds = response.body.data.map((u: { id: string }) => u.id);
+            expect(resultIds).toContain(unassignedUser.id);
+            expect(resultIds).not.toContain(assignedUser.id);
+        });
+
+        it("should reject EMPLOYEE from accessing unassigned users filter", async () => {
+            const { token } = await createUserWithToken({ role: Role.EMPLOYEE });
+
+            const response = await request(app)
+                .get("/api/users?unassigned=true")
                 .set("Authorization", `Bearer ${token}`);
 
             expect(response.status).toBe(403);

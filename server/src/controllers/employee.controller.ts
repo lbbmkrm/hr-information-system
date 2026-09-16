@@ -132,6 +132,7 @@ export default class EmployeeController {
                     message: err.message,
                 });
             }
+
             return res.status(500).json({
                 status: "error",
                 message: "Something went wrong",

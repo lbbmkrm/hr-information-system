@@ -73,8 +73,12 @@ export default class EmployeeService {
         data: UpdateEmployeeData,
     ): Promise<EmployeeResponse> {
         const employee = await this.getEmployee(id);
+        const employeeUser = await this.userRepository.findById(data.userId as string);
+        if (!employeeUser) {
+            throw new AppError("User not found", 404);
+        }
         if (!EmployeePolicy.update(user, employee)) {
-            throw new AppError("Employee not found", 403);
+            throw new AppError("unauthorized", 403);
         }
         return this.employeeRepository.update(id, data);
     }

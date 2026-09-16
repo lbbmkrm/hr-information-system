@@ -38,6 +38,7 @@ export default class UserService {
         if (!UserPolicy.viewAny(user)) {
             throw new AppError("Unauthorized", 403);
         }
+
         return this.userRepository.findAll(filter);
     }
     async getUserById(authenticatedUser: jwtPayload, id: string): Promise<UserResponse> {

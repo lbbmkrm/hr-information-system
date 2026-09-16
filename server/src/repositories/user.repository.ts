@@ -34,8 +34,10 @@ export default class UserRepository {
     async findAll(filter?: GetUsersFilter): Promise<UsersResponse[]> {
         const where: Prisma.UserWhereInput = {};
 
-        if (filter?.role !== undefined) {
-            where.role = filter.role;
+        if (filter?.assigned === false) {
+            where.employee = null;
+        } else if (filter?.assigned === true) {
+            where.employee = { isNot: null };
         }
 
         if (filter?.createdAfter || filter?.createdBefore) {
@@ -56,6 +58,7 @@ export default class UserRepository {
                 email: true,
                 role: true,
                 createdAt: true,
+                employee : true,
             },
         });
     }

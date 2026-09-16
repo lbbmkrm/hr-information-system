@@ -20,4 +20,5 @@ export const GetUsersFilterSchema = z.object({
     role: z.enum(Role).optional(),
     createdAfter: z.coerce.date().optional(),
     createdBefore: z.coerce.date().optional(),
+    assigned: z.stringbool().optional(),
 });
