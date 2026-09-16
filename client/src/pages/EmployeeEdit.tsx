@@ -4,7 +4,7 @@ import type {Employee} from "../types/employee.ts";
 import {getEmployeesById, updateEmployee} from "../api/employeeApi.ts";
 import {getUserById} from "../api/userApi.ts";
 import type {User} from "../types/user.ts";
-import UserSearchSelect from "../component/UserSearchSelect.tsx";
+import UserSearchSelect from "../components/UserSearchSelect.tsx";
 import {jwtDecode} from "jwt-decode";
 import type {jwtPayload} from "../api/authApi.ts";
 

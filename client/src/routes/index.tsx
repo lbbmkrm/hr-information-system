@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "../pages/Login.tsx";
-import Layout from "../component/Layout.tsx";
+import Layout from "../components/Layout.tsx";
 import Dashboard from "../pages/Dashboard.tsx";
 import EmployeeList from "../pages/EmployeeList.tsx";
 import EmployeeForm from "../pages/EmployeeForm.tsx";

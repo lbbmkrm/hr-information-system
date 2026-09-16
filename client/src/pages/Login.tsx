@@ -1,24 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../api/client.ts";
 import axios from "axios";
+import {useAuth} from "../contexts/AuthContext.tsx";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const {login } = useAuth();
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setError("");
-
         try {
-            const response = await apiClient.post("/auth/login", { email, password });
-            const token = response.data.data.token;
+            const user = await login(email, password);
 
-            localStorage.setItem("token", token);
-            navigate("/dashboard");
+            navigate("/dashboard", {state: {user : user}});
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.message) {
                 setError(error.response.data.message);

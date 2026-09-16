@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {type ChangeEvent, useState} from "react";
 import {createEmployee} from "../api/employeeApi.ts";
 import {useNavigate} from "react-router-dom";
 
@@ -14,7 +14,7 @@ export default function EmployeeForm(){
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e: React.ChangeEvent): Promise<void> => {
+    const handleSubmit = async (e: ChangeEvent): Promise<void> => {
         e.preventDefault();
         setError("");
         setLoading(true);

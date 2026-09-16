@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
 import {  getEmployees } from "../api/employeeApi.ts";
-import { jwtDecode } from "jwt-decode";
-import type { jwtPayload } from "../api/authApi.ts";
 import type {Employee} from "../types/employee.ts";
 import {Link} from "react-router-dom";
+import {useAuth} from "../contexts/AuthContext.tsx";
 
 export default function EmployeeList() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const token = localStorage.getItem("token");
-    const user = token ? jwtDecode<jwtPayload>(token) : null;
+    const {user} = useAuth();
 
     useEffect(() => {
         async function fetchEmployees(): Promise<void> {

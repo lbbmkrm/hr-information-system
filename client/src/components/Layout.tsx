@@ -1,14 +1,12 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-import type { jwtPayload } from "../api/authApi.ts";
+import {useAuth} from "../contexts/AuthContext.tsx";
 
 export default function Layout() {
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
-    const user = token ? jwtDecode<jwtPayload>(token) : null;
+    const {user, logout} = useAuth();
 
     function handleLogout() {
-        localStorage.removeItem("token");
+        void logout();
         navigate("/login");
     }
 
