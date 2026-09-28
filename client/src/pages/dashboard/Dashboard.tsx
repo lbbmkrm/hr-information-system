@@ -1,6 +1,6 @@
-import {useAuth} from "../contexts/AuthContext.tsx";
-import {useLocation} from "react-router-dom";
-import type {JwtPayload} from "../types/auth.ts";
+import { useAuth } from "../../contexts/AuthContext.tsx";
+import { useLocation } from "react-router-dom";
+import type { JwtPayload } from "../../types/auth.ts";
 
 export default function Dashboard() {
     const location = useLocation();

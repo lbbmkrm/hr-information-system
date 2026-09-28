@@ -9,16 +9,42 @@ import type {
 } from "../types/leavelRequestTypes.js";
 
 export default class LeaveRequestRepository {
+    private RelationsInclude = {
+        employee: {
+            select: {
+                id: true,
+                name: true,
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                        role: true,
+                        createdAt: true,
+                        updatedAt: true,
+                    },
+                },
+            },
+        },
+        reviewer: {
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                employee: {
+                    select: { id: true, name: true },
+                },
+            },
+        },
+    };
+
     async create(data: CreateLeaveRequest): Promise<LeaveRequestResponse> {
         return prisma.leaveRequest.create({
             data: data,
-            include: {
-                employee: true,
-            },
+            include: this.RelationsInclude,
         });
     }
 
-    async findAll(filter?: LeaveRequestFilter): Promise<LeaveRequest[]> {
+    async findAll(filter?: LeaveRequestFilter): Promise<LeaveRequestResponse[]> {
         if (filter) {
             return prisma.leaveRequest.findMany({
                 where: {
@@ -29,9 +55,12 @@ export default class LeaveRequestRepository {
                         lte: filter.endDate,
                     },
                 },
+                include: this.RelationsInclude,
             });
         }
-        return prisma.leaveRequest.findMany();
+        return prisma.leaveRequest.findMany({
+            include: this.RelationsInclude,
+        });
     }
 
     async findByEmployee(id: string): Promise<LeaveRequestResponse[] | null> {
@@ -39,9 +68,7 @@ export default class LeaveRequestRepository {
             where: {
                 employeeId: id,
             },
-            include: {
-                employee: true,
-            },
+            include: this.RelationsInclude,
         });
     }
 
@@ -50,9 +77,7 @@ export default class LeaveRequestRepository {
             where: {
                 id: id,
             },
-            include: {
-                employee: true,
-            },
+            include: this.RelationsInclude,
         });
     }
 

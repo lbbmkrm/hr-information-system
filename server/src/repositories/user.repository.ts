@@ -58,7 +58,7 @@ export default class UserRepository {
                 email: true,
                 role: true,
                 createdAt: true,
-                employee : true,
+                employee: true,
             },
         });
     }

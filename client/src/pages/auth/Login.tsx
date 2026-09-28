@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {useAuth} from "../contexts/AuthContext.tsx";
+import { useAuth } from "../../contexts/AuthContext.tsx";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
-    const {login } = useAuth();
+    const { login } = useAuth();
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -16,7 +16,7 @@ export default function Login() {
         try {
             const user = await login(email, password);
 
-            navigate("/dashboard", {state: {user : user}});
+            navigate("/dashboard", { state: { user: user } });
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.message) {
                 setError(error.response.data.message);

@@ -1,5 +1,5 @@
-import {createContext, useContext} from "react";
-import type {JwtPayload} from "../types/auth.ts";
+import { createContext, useContext } from "react";
+import type { JwtPayload } from "../types/auth.ts";
 interface AuthContextType {
     user: JwtPayload | null;
     login: (email: string, password: string) => Promise<JwtPayload>;
@@ -8,9 +8,9 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function useAuth(){
+export function useAuth() {
     const context = useContext(AuthContext);
-    if(!context){
+    if (!context) {
         throw new Error("useAuth must be used within the AuthProvider");
     }
 

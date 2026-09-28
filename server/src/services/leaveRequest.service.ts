@@ -27,7 +27,7 @@ export default class LeaveRequestService {
     async getAllLeaveRequests(
         user: jwtPayload,
         filter?: LeaveRequestFilter,
-    ): Promise<LeaveRequest[]> {
+    ): Promise<LeaveRequestResponse[]> {
         if (!LeaveRequestPolicy.viewAny(user)) {
             throw new AppError("Unauthorized", 403);
         }

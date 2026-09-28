@@ -1,3 +1,5 @@
+import type { User } from "./userTypes.js";
+
 export interface CreateEmployeeData {
     name: string;
     position: string;
@@ -32,4 +34,10 @@ export interface EmployeeFilter {
     department: string;
     position: string;
     joinDate: Date;
+}
+
+export interface EmployeeWithRelations {
+    id: string;
+    name: string;
+    user: User;
 }

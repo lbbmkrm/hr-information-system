@@ -1,8 +1,8 @@
-import {type ChangeEvent, useState} from "react";
-import {createEmployee} from "../api/employeeApi.ts";
-import {useNavigate} from "react-router-dom";
+import { type SubmitEvent, useState } from "react";
+import { createEmployee } from "../../api/employeeApi.ts";
+import { useNavigate } from "react-router-dom";
 
-export default function EmployeeForm(){
+export default function EmployeeForm() {
     const navigate = useNavigate();
 
     const [name, setName] = useState("");
@@ -14,12 +14,12 @@ export default function EmployeeForm(){
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e: ChangeEvent): Promise<void> => {
+    const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
         setError("");
         setLoading(true);
 
-        try{
+        try {
             await createEmployee({
                 name: name,
                 position: position,
@@ -27,77 +27,78 @@ export default function EmployeeForm(){
                 joinDate: joinDate,
                 phone: phone || undefined,
             });
-            setLoading(false);
-            navigate('/employees');
-        }catch(err){
-            setError("gagal menambahkan employee.");
+            navigate("/employees");
+        } catch (err) {
+            setError("gagal menambahkan employees.");
             console.log(err);
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     return (
-        <div className="p-8 max-w-lg">
-            <h1 className="text-xl font-bold mb-4">Tambah Karyawan</h1>
+        <div className="max-w-lg p-8">
+            <h1 className="mb-4 text-xl font-bold">Tambah Karyawan</h1>
 
-            {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+            {error && <p className="mb-2 text-sm text-red-500">{error}</p>}
 
-            <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow">
-                <label className="block text-sm font-medium mb-1">Nama</label>
+            <form onSubmit={handleSubmit} className="rounded bg-white p-6 shadow">
+                <label className="mb-1 block text-sm font-medium">Nama</label>
                 <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full border p-2 rounded mb-3"
+                    className="mb-3 w-full rounded border p-2"
                     required
                 />
 
-                <label className="block text-sm font-medium mb-1">Posisi</label>
+                <label className="mb-1 block text-sm font-medium">Posisi</label>
                 <input
                     type="text"
                     value={position}
                     onChange={(e) => setPosition(e.target.value)}
-                    className="w-full border p-2 rounded mb-3"
+                    className="mb-3 w-full rounded border p-2"
                     required
                 />
 
-                <label className="block text-sm font-medium mb-1">Departemen</label>
+                <label className="mb-1 block text-sm font-medium">Departemen</label>
                 <input
                     type="text"
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
-                    className="w-full border p-2 rounded mb-3"
+                    className="mb-3 w-full rounded border p-2"
                     required
                 />
 
-                <label className="block text-sm font-medium mb-1">Tanggal Bergabung</label>
+                <label className="mb-1 block text-sm font-medium">Tanggal Bergabung</label>
                 <input
                     type="date"
                     value={joinDate}
                     onChange={(e) => setJoinDate(e.target.value)}
-                    className="w-full border p-2 rounded mb-3"
+                    className="mb-3 w-full rounded border p-2"
                     required
                 />
 
-                <label className="block text-sm font-medium mb-1">Nomor Telepon (opsional)</label>
+                <label className="mb-1 block text-sm font-medium">Nomor Telepon (opsional)</label>
                 <input
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full border p-2 rounded mb-4"
+                    className="mb-4 w-full rounded border p-2"
                 />
 
                 <div className="flex gap-2">
                     <button
                         type="submit"
                         disabled={loading}
-                        className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+                        className="rounded bg-blue-500 px-4 py-2 text-white disabled:opacity-50"
                     >
                         {loading ? "Menyimpan..." : "Simpan"}
                     </button>
                     <button
                         type="button"
                         onClick={() => navigate("/employees")}
-                        className="border px-4 py-2 rounded"
+                        className="rounded border px-4 py-2"
                     >
                         Batal
                     </button>

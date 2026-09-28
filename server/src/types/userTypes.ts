@@ -1,4 +1,13 @@
 import { Role } from "../generated/prisma/index.js";
+
+export interface User {
+    id: string;
+    email: string;
+    role: Role;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface CreateUserData {
     email: string;
     password: string;

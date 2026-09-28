@@ -1,9 +1,9 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import {useAuth} from "../contexts/AuthContext.tsx";
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 export default function Layout() {
     const navigate = useNavigate();
-    const {user, logout} = useAuth();
+    const { user, logout } = useAuth();
 
     function handleLogout() {
         void logout();
@@ -22,6 +22,9 @@ export default function Layout() {
                     </Link>
                     <Link to={"/leave-requests"} className={"text-gray-600 hover:text-black"}>
                         Cuti
+                    </Link>
+                    <Link to={"/leave-requests/me"} className={"text-gray-600 hover:text-black"}>
+                        Riwayat Saya
                     </Link>
                     {user?.role === "ADMIN" && (
                         <Link to={"/users"} className={"text-gray-600 hover:text-black"}>

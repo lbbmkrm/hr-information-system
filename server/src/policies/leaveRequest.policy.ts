@@ -7,18 +7,18 @@ export default class LeaveRequestPolicy {
         return user.role === "HR";
     }
     static view(user: jwtPayload, leaveRequest: LeaveRequestResponse): boolean {
-        return user.role === "HR" || user.userId === leaveRequest.employee.userId;
+        return user.role === "HR" || user.userId === leaveRequest.employee.user?.id;
     }
     static create(user: jwtPayload, employee: EmployeeResponse): boolean {
         return user.role === "HR" || user.userId === employee.userId;
     }
     static update(user: jwtPayload, leaveRequest: LeaveRequestResponse): boolean {
-        return user.userId === leaveRequest.employee.userId;
+        return user.userId === leaveRequest.employee.user?.id;
     }
     static delete(user: jwtPayload, leaveRequest: LeaveRequestResponse): boolean {
-        return user.userId === leaveRequest.employee.userId;
+        return user.userId === leaveRequest.employee.user?.id;
     }
     static review(user: jwtPayload, leaveRequest: LeaveRequestResponse): boolean {
-        return user.role === "HR" && user.userId !== leaveRequest.employee.userId;
+        return user.role === "HR" && user.userId !== leaveRequest.employee.user?.id;
     }
 }

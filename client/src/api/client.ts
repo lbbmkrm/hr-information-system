@@ -12,14 +12,6 @@ apiClient.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
-
-    console.log("→ Request:", {
-        method: config.method?.toUpperCase(),
-        url: config.url,
-        baseURL: config.baseURL,
-        params: config.params,   // query string (?key=value)
-        data: config.data,       // body (POST/PUT/PATCH)
-    });
     return config;
 });
 
@@ -30,6 +22,7 @@ apiClient.interceptors.response.use(
             localStorage.removeItem("token");
             window.location.href = "/login";
         }
+        return Promise.reject(error);
     },
 );
 

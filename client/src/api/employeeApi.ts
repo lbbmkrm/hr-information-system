@@ -3,16 +3,21 @@ import type {
     CreateEmployeePayload,
     Employee,
     filterGetEmployeesPayload,
-    UpdateEmployeePayload
+    UpdateEmployeePayload,
 } from "../types/employee.ts";
 
 export async function getEmployees(filters?: filterGetEmployeesPayload): Promise<Employee[]> {
-    const response = await apiClient.get("/employees", {params: filters});
+    const response = await apiClient.get("/employees", { params: filters });
     return response.data.data;
 }
 
 export async function getEmployeesById(id: string): Promise<Employee> {
     const response = await apiClient.get(`/employees/${id}`);
+    return response.data.data;
+}
+
+export async function getEmployeeByUserId(id: string): Promise<Employee> {
+    const response = await apiClient.get(`/employees/user/${id}`);
     return response.data.data;
 }
 
