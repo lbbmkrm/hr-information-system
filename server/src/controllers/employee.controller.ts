@@ -1,6 +1,5 @@
 import EmployeeService from "../services/employee.service.js";
 import type { Request, Response } from "express";
-import AppError from "../utils/AppError.js";
 import type {
     CreateEmployeeData,
     EmployeeFilter,
@@ -16,148 +15,74 @@ export default class EmployeeController {
     }
 
     public index = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const employees = await this.employeeService.getAllEmployees(
-                req.user as jwtPayload,
-                req.validatedQuery as EmployeeFilter,
-            );
-            return res.status(200).json({
-                status: "success",
-                message: "Retrived employees data successfully",
-                data: employees,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                return res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        const employees = await this.employeeService.getAllEmployees(
+            req.user as jwtPayload,
+            req.validatedQuery as EmployeeFilter,
+        );
+
+        return res.status(200).json({
+            status: "success",
+            message: "Data karyawan berhasil dimuat.",
+            data: employees,
+        });
     };
 
     public show = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const employee = await this.employeeService.getEmployeeById(
-                req.user as jwtPayload,
-                req.params.id as string,
-            );
-            return res.status(200).json({
-                status: "success",
-                message: "Retrieved employee data successfully",
-                data: employee,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                return res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        const employee = await this.employeeService.getEmployeeById(
+            req.user as jwtPayload,
+            req.params.id as string,
+        );
+
+        return res.status(200).json({
+            status: "success",
+            message: "Detail data karyawan berhasil dimuat.",
+            data: employee,
+        });
     };
 
     public showByUser = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const employee = await this.employeeService.getEmployeeByUserId(
-                req.params.id as string,
-            );
-            return res.status(200).json({
-                status: "success",
-                message: "Retrieved employee data successfully",
-                data: employee,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                return res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        const employee = await this.employeeService.getEmployeeByUserId(req.params.id as string);
+
+        return res.status(200).json({
+            status: "success",
+            message: "Data akun karyawan berhasil dimuat.",
+            data: employee,
+        });
     };
 
     public store = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const employee = await this.employeeService.addEmployee(
-                req.user as jwtPayload,
-                req.validatedBody as CreateEmployeeData,
-            );
-            return res.status(201).json({
-                status: "success",
-                message: "Created employee data successfully",
-                data: employee,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                return res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
-    };
-    public edit = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const employee = await this.employeeService.updateEmployee(
-                req.user as jwtPayload,
-                req.params.id as string,
-                req.validatedBody as UpdateEmployeeData,
-            );
-            return res.status(200).json({
-                status: "success",
-                message: "Updated employee data successfully",
-                data: employee,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                return res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
+        const employee = await this.employeeService.addEmployee(
+            req.user as jwtPayload,
+            req.validatedBody as CreateEmployeeData,
+        );
 
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        return res.status(201).json({
+            status: "success",
+            message: "Data karyawan baru berhasil ditambahkan.",
+            data: employee,
+        });
+    };
+
+    public edit = async (req: Request, res: Response): Promise<Response> => {
+        const employee = await this.employeeService.updateEmployee(
+            req.user as jwtPayload,
+            req.params.id as string,
+            req.validatedBody as UpdateEmployeeData,
+        );
+
+        return res.status(200).json({
+            status: "success",
+            message: "Data karyawan berhasil diperbarui.",
+            data: employee,
+        });
     };
 
     public destroy = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            await this.employeeService.deleteEmployee(
-                req.user as jwtPayload,
-                req.params.id as string,
-            );
-            return res.status(200).json({
-                status: "success",
-                message: "Deleted employee data successfully",
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                return res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({});
-        }
+        await this.employeeService.deleteEmployee(req.user as jwtPayload, req.params.id as string);
+
+        return res.status(200).json({
+            status: "success",
+            message: "Data karyawan berhasil dihapus.",
+        });
     };
 }

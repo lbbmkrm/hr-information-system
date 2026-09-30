@@ -7,7 +7,6 @@ import type {
     UpdateLeaveRequest,
     UpdateStatusLeaveRequest,
 } from "../types/leavelRequestTypes.js";
-import AppError from "../utils/AppError.js";
 import type { jwtPayload } from "../lib/jwt.js";
 
 export default class LeaveRequestController {
@@ -18,183 +17,97 @@ export default class LeaveRequestController {
     }
 
     public index = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const leaveRequests: LeaveRequest[] =
-                await this.leaveRequestService.getAllLeaveRequests(
-                    req.user as jwtPayload,
-                    req.validatedQuery as LeaveRequestFilter,
-                );
-            return res.status(200).json({
-                status: "success",
-                message: "Retrieved all Leave Requests successfully",
-                data: leaveRequests,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        const leaveRequests: LeaveRequest[] = await this.leaveRequestService.getAllLeaveRequests(
+            req.user as jwtPayload,
+            req.validatedQuery as LeaveRequestFilter,
+        );
+
+        return res.status(200).json({
+            status: "success",
+            message: "Data pengajuan cuti berhasil dimuat.",
+            data: leaveRequests,
+        });
     };
 
     public show = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const leaveRequest = await this.leaveRequestService.getLeaveRequest(
-                req.user as jwtPayload,
-                req.params.id as string,
-            );
-            return res.status(200).json({
-                status: "success",
-                message: "Retrieved Leave Request successfully",
-                data: leaveRequest,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        const leaveRequest = await this.leaveRequestService.getLeaveRequest(
+            req.user as jwtPayload,
+            req.params.id as string,
+        );
+
+        return res.status(200).json({
+            status: "success",
+            message: "Detail pengajuan cuti berhasil dimuat.",
+            data: leaveRequest,
+        });
     };
 
     public showByEmployee = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const leaveRequest = await this.leaveRequestService.getEmployeeLeaveRequest(
-                req.user as jwtPayload,
-                req.params.id as string,
-            );
-            return res.status(200).json({
-                status: "success",
-                message: "Retrieved Leave Request successfully",
-                data: leaveRequest,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        const leaveRequest = await this.leaveRequestService.getEmployeeLeaveRequest(
+            req.user as jwtPayload,
+            req.params.id as string,
+        );
+
+        return res.status(200).json({
+            status: "success",
+            message: "Detail pengajuan cuti karyawan berhasil dimuat.",
+            data: leaveRequest,
+        });
     };
 
     public store = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const leaveRequest = await this.leaveRequestService.addLeaveRequest(
-                req.user as jwtPayload,
-                req.validatedBody as CreateLeaveRequest,
-            );
-            return res.status(201).json({
-                status: "success",
-                message: "Created Leave Request successfully",
-                data: leaveRequest,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-                error: err,
-            });
-        }
+        const leaveRequest = await this.leaveRequestService.addLeaveRequest(
+            req.user as jwtPayload,
+            req.validatedBody as CreateLeaveRequest,
+        );
+
+        return res.status(201).json({
+            status: "success",
+            message: "Pengajuan cuti baru berhasil dikirim.",
+            data: leaveRequest,
+        });
     };
 
     public edit = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const leaveRequest = await this.leaveRequestService.updateLeaveRequest(
-                req.user as jwtPayload,
-                req.params.id as string,
-                req.validatedBody as UpdateLeaveRequest,
-            );
-            return res.status(200).json({
-                status: "success",
-                message: "Updated Leave Request successfully",
-                data: leaveRequest,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        const leaveRequest = await this.leaveRequestService.updateLeaveRequest(
+            req.user as jwtPayload,
+            req.params.id as string,
+            req.validatedBody as UpdateLeaveRequest,
+        );
+
+        return res.status(200).json({
+            status: "success",
+            message: "Data pengajuan cuti berhasil diperbarui.",
+            data: leaveRequest,
+        });
     };
 
     public editStatus = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const data: UpdateStatusLeaveRequest = req.validatedBody as UpdateStatusLeaveRequest;
-            data.reviewedBy = req.user?.userId as string;
-            const leaveRequest = await this.leaveRequestService.updateStatusLeaveRequest(
-                req.user as jwtPayload,
-                req.params.id as string,
-                data,
-            );
+        const data: UpdateStatusLeaveRequest = req.validatedBody as UpdateStatusLeaveRequest;
+        data.reviewedBy = req.user?.userId as string;
 
-            return res.status(200).json({
-                status: "success",
-                message: "Updated Leave Request status successfully",
-                data: leaveRequest,
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        const leaveRequest = await this.leaveRequestService.updateStatusLeaveRequest(
+            req.user as jwtPayload,
+            req.params.id as string,
+            data,
+        );
+
+        return res.status(200).json({
+            status: "success",
+            message: "Status pengajuan cuti berhasil diperbarui.",
+            data: leaveRequest,
+        });
     };
 
     public destroy = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            await this.leaveRequestService.deleteLeaveRequest(
-                req.user as jwtPayload,
-                req.params.id as string,
-            );
-            return res.status(200).json({
-                status: "success",
-                message: "Deleted Leave Request successfully",
-            });
-        } catch (err) {
-            if (err instanceof AppError) {
-                return res.status(err.code).json({
-                    status: "error",
-                    message: err.message,
-                });
-            }
-            return res.status(500).json({
-                status: "error",
-                message: "Something went wrong",
-            });
-        }
+        await this.leaveRequestService.deleteLeaveRequest(
+            req.user as jwtPayload,
+            req.params.id as string,
+        );
+
+        return res.status(200).json({
+            status: "success",
+            message: "Pengajuan cuti berhasil dihapus.",
+        });
     };
 }

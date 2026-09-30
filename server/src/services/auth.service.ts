@@ -13,11 +13,11 @@ export default class AuthService {
     async login(data: LoginPayload): Promise<LoginResponse | null> {
         const user = await this.userRepository.findByEmail(data.email);
         if (!user) {
-            throw new AppError("Invalid credentials", 401);
+            throw new AppError("Email atau password salah", 401);
         }
         const isPasswordMatch = await bcrypt.compare(data.password, user.password);
         if (!isPasswordMatch) {
-            throw new AppError("Invalid credentials", 401);
+            throw new AppError("Email atau password salah", 401);
         }
         const token = jwtSignature({
             userId: user.id,

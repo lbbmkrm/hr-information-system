@@ -22,23 +22,16 @@ const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => 
         req.user = decoded;
         next();
     } catch (e) {
-        if (e instanceof AppError) {
-            return res.status(e.code).json({
-                status: "error",
-                message: e.message,
-            });
-        }
         if (e instanceof jwt.JsonWebTokenError) {
-            return res.status(401).json({
-                status: "error",
-                message: "Unauthorized: Invalid token",
-            });
+            if (e.name === "TokenExpiredError") {
+                throw new AppError("Sesi telah berakhir", 401);
+            }
+            if (e.name === "JsonWebTokenError") {
+                throw new AppError("Token tidak valid", 401);
+            }
         }
 
-        return res.status(500).json({
-            status: "error",
-            error: e,
-        });
+        next(e);
     }
 };
 

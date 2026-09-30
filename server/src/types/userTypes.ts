@@ -41,7 +41,7 @@ export interface GetUsersFilter {
     role?: Role;
     createdAfter?: Date;
     createdBefore?: Date;
-    assigned: boolean;
+    assigned?: boolean;
 }
 
 export interface LoginResponse {

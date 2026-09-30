@@ -35,7 +35,7 @@ describe("Auth API", () => {
 
             expect(response.body).toMatchObject({
                 status: "success",
-                message: "User login successfull",
+                message: "Login Berhasil",
             });
 
             expect(response.body.data).toBeDefined();

@@ -103,7 +103,7 @@ describe("User API", () => {
             });
 
             const response = await request(app)
-                .get("/api/users?unassigned=true")
+                .get("/api/users?assigned=false")
                 .set("Authorization", `Bearer ${token}`);
 
             expect(response.status).toBe(200);
@@ -117,7 +117,7 @@ describe("User API", () => {
             const { token } = await createUserWithToken({ role: Role.EMPLOYEE });
 
             const response = await request(app)
-                .get("/api/users?unassigned=true")
+                .get("/api/users?assigned=false")
                 .set("Authorization", `Bearer ${token}`);
 
             expect(response.status).toBe(403);
