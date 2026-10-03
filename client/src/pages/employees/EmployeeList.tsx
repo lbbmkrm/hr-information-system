@@ -3,6 +3,7 @@ import { getEmployees } from "../../api/employeeApi.ts";
 import type { Employee } from "../../types/employee.ts";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext.tsx";
+import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
 export default function EmployeeList() {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -17,9 +18,9 @@ export default function EmployeeList() {
                 setLoading(true);
                 const data = await getEmployees();
                 setEmployees(data);
-            } catch (error) {
-                console.log(error);
-                setError("failed to fetch employees data");
+            } catch (e) {
+                console.error(e);
+                setError(getErrorMessage(e, "Gagal mengambil daftar karyawan."));
             } finally {
                 setLoading(false);
             }

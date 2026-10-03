@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext.tsx";
+import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
 export default function Login() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/dashboard";
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const navigate = useNavigate();
     const { login } = useAuth();
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -16,13 +19,9 @@ export default function Login() {
         try {
             const user = await login(email, password);
 
-            navigate("/dashboard", { state: { user: user } });
+            navigate(from, { state: { user: user }, replace: true });
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response?.data?.message) {
-                setError(error.response.data.message);
-            } else {
-                setError("Email or password is incorrect");
-            }
+            setError(getErrorMessage(error, "Email or password is incorrect"));
             console.log(error);
         }
     }

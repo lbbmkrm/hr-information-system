@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { User } from "../types/user.ts";
 import { getUsers } from "../api/userApi.ts";
+import { getErrorMessage } from "../utils/getErrorMessage.ts";
 
 interface UserSearchSelectProps {
     value: string | null | undefined;
@@ -13,6 +14,7 @@ export default function UserSearchSelect({ value, onSelect, currentEmail }: User
     const [searchValue, setSearchValue] = useState("");
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchAvaible = async () => {
@@ -21,7 +23,8 @@ export default function UserSearchSelect({ value, onSelect, currentEmail }: User
                 const unConnectedUsers = await getUsers({ assigned: false });
                 setAvaibleUsers(unConnectedUsers as User[]);
             } catch (error) {
-                console.log(error);
+                console.error(error);
+                setError(getErrorMessage(error, "Gagal memuat daftar pengguna."));
             } finally {
                 setLoading(false);
             }
@@ -43,11 +46,12 @@ export default function UserSearchSelect({ value, onSelect, currentEmail }: User
 
     return (
         <div className={"relative"}>
+            {error && <p className="mb-1 text-sm text-red-600">{error}</p>}
             <input
                 type={"text"}
                 placeholder={loading ? "Memuat users" : "cari email user"}
                 value={searchValue}
-                disabled={loading}
+                disabled={loading || Boolean(error)}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onFocus={() => setIsOpen(true)}
                 onBlur={() => setTimeout(() => setIsOpen(false), 150)}

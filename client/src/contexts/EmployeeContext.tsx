@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 export interface EmployeeContextType {
     employee: Employee | null;
     loading: boolean;
+    error: string | null;
 }
 
 export const EmployeeContext = createContext<EmployeeContextType | undefined>(undefined);

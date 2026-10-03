@@ -9,7 +9,18 @@ function getInitialUser(): JwtPayload | null {
     if (!token) {
         return null;
     }
-    return jwtDecode<JwtPayload>(token);
+
+    try {
+        const payload = jwtDecode<JwtPayload & { exp?: number }>(token);
+        if (payload.exp && payload.exp * 1000 < Date.now()) {
+            localStorage.removeItem("token");
+            return null;
+        }
+        return payload;
+    } catch {
+        localStorage.removeItem("token");
+        return null;
+    }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

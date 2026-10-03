@@ -7,6 +7,7 @@ import type { User } from "../../types/user.ts";
 import UserSearchSelect from "../../components/UserSearchSelect.tsx";
 import { jwtDecode } from "jwt-decode";
 import type { jwtPayload } from "../../api/authApi.ts";
+import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
 interface FormData {
     name: string;
@@ -43,7 +44,7 @@ export default function EmployeeEdit() {
             setEmployeeUser(user);
         } catch (e) {
             console.error(e);
-            setError("gagal mengambil data user");
+            setError(getErrorMessage(e, "Gagal mengambil data user."));
         } finally {
             setLoading(false);
         }
@@ -56,7 +57,7 @@ export default function EmployeeEdit() {
             navigate(`/employees/${id}`, { state: { message: "success" } });
         } catch (e) {
             console.error(e);
-            setError("gagal meng-edit data");
+            setError(getErrorMessage(e, "Gagal mengubah data karyawan."));
         }
     };
 
@@ -69,7 +70,7 @@ export default function EmployeeEdit() {
             setFormData((prevData) => ({ ...prevData, [name]: value }));
         } catch (e) {
             console.error(e);
-            setError("gagal mengubah data form");
+            setError(getErrorMessage(e, "Gagal mengubah data form."));
         }
     };
 
@@ -92,7 +93,7 @@ export default function EmployeeEdit() {
                 });
             } catch (e) {
                 console.error(e);
-                setError("gagal mengambil data");
+                setError(getErrorMessage(e, "Gagal mengambil data karyawan."));
             } finally {
                 setLoading(false);
             }

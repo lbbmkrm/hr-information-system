@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { LeaveRequest } from "../../types/leaveRequest.ts";
 import { getLeaveRequests } from "../../api/leaveRequestApi.ts";
 import { Link } from "react-router-dom";
+import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
 export default function LeaveRequestList() {
     const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
@@ -14,9 +15,9 @@ export default function LeaveRequestList() {
                 setLoading(true);
                 const leaveRequests = await getLeaveRequests();
                 setLeaveRequests(leaveRequests);
-            } catch (err) {
-                console.log(err);
-                setError("failed to fetch leave requests.");
+            } catch (e) {
+                console.error(e);
+                setError(getErrorMessage(e, "Gagal mengambil daftar pengajuan cuti."));
             } finally {
                 setLoading(false);
             }
@@ -29,8 +30,7 @@ export default function LeaveRequestList() {
     }
 
     if (error) {
-        console.log(error);
-        return <div className="p-8 text-center text-red-500">Error</div>;
+        return <div className="p-8 text-center text-red-500">{error}</div>;
     }
 
     return (

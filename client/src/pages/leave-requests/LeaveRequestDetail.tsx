@@ -2,6 +2,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { LeaveRequest } from "../../types/leaveRequest.ts";
 import { getLeaveRequestById } from "../../api/leaveRequestApi.ts";
+import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
 export default function LeaveRequestDetail() {
     const location = useLocation();
@@ -23,9 +24,9 @@ export default function LeaveRequestDetail() {
                 setLoading(true);
                 const response = await getLeaveRequestById(id as string);
                 setLeaveRequest(response);
-            } catch (err) {
-                console.error(err);
-                setError("Gagal mengambil data cuti");
+            } catch (e) {
+                console.error(e);
+                setError(getErrorMessage(e, "Gagal mengambil data pengajuan cuti."));
             } finally {
                 setLoading(false);
             }

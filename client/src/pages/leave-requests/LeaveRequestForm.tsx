@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext.tsx";
 import type { Employee } from "../../types/employee.ts";
 import { getEmployeeByUserId } from "../../api/employeeApi.ts";
 import { AxiosError } from "axios";
+import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
 export default function LeaveRequestForm() {
     const navigate = useNavigate();
@@ -33,9 +34,9 @@ export default function LeaveRequestForm() {
                 reason: reason,
             } as LeaveRequestPayload);
             navigate("/leave-requests");
-        } catch (error) {
-            console.log(error);
-            setError("gagal membuat permintaan cuti");
+        } catch (e) {
+            console.error(e);
+            setError(getErrorMessage(e, "Gagal membuat pengajuan cuti."));
         } finally {
             setLoading(false);
         }
@@ -55,10 +56,11 @@ export default function LeaveRequestForm() {
                 const response = await getEmployeeByUserId(authenticatedUser.userId);
                 setEmployee(response);
             } catch (e) {
-                console.log(e);
+                console.error(e);
                 if (e instanceof AxiosError && e.response?.status == 404) {
-                    alert("this user does not has employee data");
-                    navigate("/leave-requests");
+                    setError(getErrorMessage(e, "Akun ini belum terhubung dengan data karyawan."));
+                } else {
+                    setError(getErrorMessage(e, "Gagal mengambil data karyawan."));
                 }
             } finally {
                 setLoading(false);

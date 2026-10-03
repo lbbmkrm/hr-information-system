@@ -3,13 +3,14 @@ import type { LeaveRequest } from "../../types/leaveRequest.ts";
 import { useEmployee } from "../../contexts/EmployeeContext.tsx";
 import { getLeaveRequestByEmployeeId } from "../../api/leaveRequestApi.ts";
 import { Link } from "react-router-dom";
+import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
 export default function MyLeaveRequest() {
     const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[] | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const { employee, loading: employeeLoading } = useEmployee();
+    const { employee, loading: employeeLoading, error: employeeError } = useEmployee();
 
     useEffect(() => {
         if (!employee) return;
@@ -19,9 +20,9 @@ export default function MyLeaveRequest() {
                 setLoading(true);
                 const response = await getLeaveRequestByEmployeeId(employee!.id);
                 setLeaveRequests(response);
-            } catch (error) {
-                console.error(error);
-                setError("Gagal mengambil data cuti");
+            } catch (e) {
+                console.error(e);
+                setError(getErrorMessage(e, "Gagal mengambil riwayat pengajuan cuti."));
             } finally {
                 setLoading(false);
             }
@@ -32,6 +33,10 @@ export default function MyLeaveRequest() {
 
     if (employeeLoading) {
         return <div>Memuat data karyawan...</div>;
+    }
+
+    if (employeeError) {
+        return <div>{employeeError}</div>;
     }
 
     if (!employee) {

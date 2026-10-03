@@ -11,33 +11,58 @@ import LeaveRequestForm from "../pages/leave-requests/LeaveRequestForm.tsx";
 import MyLeaveRequest from "../pages/leave-requests/MyLeaveRequest.tsx";
 import LeaveRequestDetail from "../pages/leave-requests/LeaveRequestDetail.tsx";
 import LeaveRequestEditStatus from "../pages/leave-requests/LeaveRequestEditStatus.tsx";
+import ProtectedRoute from "../components/ProtectedRoute.tsx";
+import GuestRoute from "../components/GuestRoute.tsx";
 
 const router = createBrowserRouter([
     {
-        path: "/login",
-        element: <Login />,
+        element: <GuestRoute />,
+        children: [
+            {
+                path: "/login",
+                element: <Login />,
+            },
+        ],
     },
     {
-        element: <Layout />,
+        element: <ProtectedRoute />,
         children: [
-            { path: "/dashboard", element: <Dashboard /> },
             {
-                path: "/employees",
+                element: <Layout />,
                 children: [
-                    { index: true, element: <EmployeeList /> },
-                    { path: "add", element: <EmployeeForm /> },
-                    { path: ":id", element: <EmployeeDetail /> },
-                    { path: "edit/:id", element: <EmployeeEdit /> },
-                ],
-            },
-            {
-                path: "/leave-requests",
-                children: [
-                    { index: true, element: <LeaveRequestList /> },
-                    { path: "me", element: <MyLeaveRequest /> },
-                    { path: "add", element: <LeaveRequestForm /> },
-                    { path: "edit/:id/status", element: <LeaveRequestEditStatus /> },
-                    { path: ":id", element: <LeaveRequestDetail /> },
+                    { path: "/dashboard", element: <Dashboard /> },
+                    {
+                        path: "/employees",
+                        children: [
+                            {
+                                element: <ProtectedRoute />,
+                                children: [
+                                    { index: true, element: <EmployeeList /> },
+                                    { path: "add", element: <EmployeeForm /> },
+                                    { path: ":id", element: <EmployeeDetail /> },
+                                    { path: "edit/:id", element: <EmployeeEdit /> },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        path: "/leave-requests",
+                        children: [
+                            {
+                                element: <ProtectedRoute />,
+                                children: [
+                                    { index: true, element: <LeaveRequestList /> },
+                                    {
+                                        path: "edit/:id/status",
+                                        element: <LeaveRequestEditStatus />,
+                                    },
+                                ],
+                            },
+                            { path: "me", element: <MyLeaveRequest /> },
+                            { path: "add", element: <LeaveRequestForm /> },
+                            { path: ":id", element: <LeaveRequestDetail /> },
+                        ],
+                    },
                 ],
             },
         ],

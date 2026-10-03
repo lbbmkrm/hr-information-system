@@ -6,6 +6,7 @@ import type {
 } from "../../types/leaveRequest.ts";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getLeaveRequestById, updateLeaveRequestStatus } from "../../api/leaveRequestApi.ts";
+import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
 const STATUS_OPTIONS: { label: string; value: LeaveStatus }[] = [
     { label: "Menunggu", value: "PENDING" },
@@ -38,7 +39,9 @@ export default function LeaveRequestEditStatus() {
                 if (isMounted) setLeaveRequest(response);
             } catch (e) {
                 console.error(e);
-                if (isMounted) setError("Gagal memuat data pengajuan cuti.");
+                if (isMounted) {
+                    setError(getErrorMessage(e, "Gagal memuat data pengajuan cuti."));
+                }
             } finally {
                 if (isMounted) setLoading(false);
             }
@@ -50,7 +53,6 @@ export default function LeaveRequestEditStatus() {
         };
     }, [location.state, id]);
 
-    // Type-safe: kita hanya update field `status`
     const handleStatusChange = (e: ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value as LeaveStatus;
         setLeaveRequest((prev) => (prev ? { ...prev, status: value } : prev));
@@ -70,9 +72,9 @@ export default function LeaveRequestEditStatus() {
 
             await updateLeaveRequestStatus(id, payload);
             navigate(`/leave-requests/${leaveRequest.id}`);
-        } catch (err) {
-            console.error(err);
-            setSubmitError("Gagal memperbarui status. Silakan coba lagi.");
+        } catch (e) {
+            console.error(e);
+            setSubmitError(getErrorMessage(e, "Gagal memperbarui status pengajuan cuti."));
         } finally {
             setSubmitting(false);
         }

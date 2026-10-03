@@ -1,6 +1,7 @@
 import { type SubmitEvent, useState } from "react";
 import { createEmployee } from "../../api/employeeApi.ts";
 import { useNavigate } from "react-router-dom";
+import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
 export default function EmployeeForm() {
     const navigate = useNavigate();
@@ -28,9 +29,9 @@ export default function EmployeeForm() {
                 phone: phone || undefined,
             });
             navigate("/employees");
-        } catch (err) {
-            setError("gagal menambahkan employees.");
-            console.log(err);
+        } catch (error) {
+            console.error(error);
+            setError(getErrorMessage(error, "Gagal menambahkan karyawan."));
         } finally {
             setLoading(false);
         }
