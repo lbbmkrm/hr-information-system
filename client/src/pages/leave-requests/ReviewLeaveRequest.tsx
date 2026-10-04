@@ -14,7 +14,7 @@ const STATUS_OPTIONS: { label: string; value: LeaveStatus }[] = [
     { label: "Ditolak", value: "REJECTED" },
 ];
 
-export default function LeaveRequestEditStatus() {
+export default function ReviewLeaveRequest() {
     const location = useLocation();
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();

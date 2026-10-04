@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext.tsx";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
-export default function EmployeeList() {
+export default function ListEmployees() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

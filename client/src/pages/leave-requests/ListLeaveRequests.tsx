@@ -4,7 +4,7 @@ import { getLeaveRequests } from "../../api/leaveRequestApi.ts";
 import { Link } from "react-router-dom";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
-export default function LeaveRequestList() {
+export default function ListLeaveRequests() {
     const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);

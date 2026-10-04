@@ -8,7 +8,7 @@ import { getEmployeeByUserId } from "../../api/employeeApi.ts";
 import { AxiosError } from "axios";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
-export default function LeaveRequestForm() {
+export default function CreateLeaveRequest() {
     const navigate = useNavigate();
     const [employee, setEmployee] = useState<Employee>();
     const [startDate, setStartDate] = useState<string | null>(null);
@@ -33,7 +33,7 @@ export default function LeaveRequestForm() {
                 endDate: endDate,
                 reason: reason,
             } as LeaveRequestPayload);
-            navigate("/leave-requests");
+            navigate("/leave-requests/me");
         } catch (e) {
             console.error(e);
             setError(getErrorMessage(e, "Gagal membuat pengajuan cuti."));

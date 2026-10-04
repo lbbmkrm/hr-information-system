@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import type { LeaveRequest } from "../../types/leaveRequest.ts";
 import { useEmployee } from "../../contexts/EmployeeContext.tsx";
-import { getLeaveRequestByEmployeeId } from "../../api/leaveRequestApi.ts";
+import { deleteLeaveRequest, getLeaveRequestByEmployeeId } from "../../api/leaveRequestApi.ts";
 import { Link } from "react-router-dom";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
-export default function MyLeaveRequest() {
+export default function ListMyLeaveRequests() {
     const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[] | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const { employee, loading: employeeLoading, error: employeeError } = useEmployee();
 
@@ -30,6 +31,25 @@ export default function MyLeaveRequest() {
 
         void fetchLeaveRequests();
     }, [employee]);
+
+    async function handleDeleteLeaveRequest(leaveRequest: LeaveRequest) {
+        const confirmed = window.confirm("Yakin ingin menghapus pengajuan cuti ini?");
+        if (!confirmed) return;
+
+        try {
+            setDeletingId(leaveRequest.id);
+            setError(null);
+            await deleteLeaveRequest(leaveRequest.id);
+            setLeaveRequests(
+                (current) => current?.filter((request) => request.id !== leaveRequest.id) ?? null,
+            );
+        } catch (deleteError) {
+            console.error(deleteError);
+            setError(getErrorMessage(deleteError, "Gagal menghapus pengajuan cuti."));
+        } finally {
+            setDeletingId(null);
+        }
+    }
 
     if (employeeLoading) {
         return <div>Memuat data karyawan...</div>;
@@ -72,6 +92,7 @@ export default function MyLeaveRequest() {
                             <th className="p-3">Tanggal Selesai</th>
                             <th className="p-3">Alasan</th>
                             <th className="p-3">Status</th>
+                            <th className={"p-3"}></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,6 +106,22 @@ export default function MyLeaveRequest() {
                                 </td>
                                 <td className="p-3">{lr.reason}</td>
                                 <td className="p-3">{lr.status}</td>
+                                <td className="p-3">
+                                    <Link
+                                        to={`/leave-requests/edit/${lr.id}`}
+                                        className="text-sky-600 hover:underline"
+                                    >
+                                        Ubah
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        onClick={() => void handleDeleteLeaveRequest(lr)}
+                                        disabled={deletingId === lr.id}
+                                        className="ml-3 text-red-600 hover:underline disabled:opacity-50"
+                                    >
+                                        {deletingId === lr.id ? "Menghapus..." : "Hapus"}
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

@@ -3,10 +3,14 @@ import { useEffect, useState } from "react";
 import type { Employee } from "../../types/employee.ts";
 import { deleteEmployee, getEmployeesById } from "../../api/employeeApi.ts";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
+import EmployeePolicy from "../../policies/EmployeePolicy.ts";
+import type { JwtPayload } from "../../types/auth.ts";
+import { useAuth } from "../../contexts/AuthContext.tsx";
 
-export default function EmployeeDetail() {
+export default function ViewEmployee() {
     const { id } = useParams<{ id: string }>();
     const [employee, setEmployee] = useState<Employee | null>(null);
+    const { user } = useAuth();
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -66,12 +70,14 @@ export default function EmployeeDetail() {
                             edit
                         </Link>
                     </button>
-                    <button
-                        onClick={() => handleDeleteEmployee(employee?.id as string)}
-                        className={"text-red-600 hover:underline"}
-                    >
-                        <Link to={"/employees"}>hapus</Link>
-                    </button>
+                    {EmployeePolicy.delete(user as JwtPayload) && (
+                        <button
+                            onClick={() => handleDeleteEmployee(employee?.id as string)}
+                            className={"text-red-600 hover:underline"}
+                        >
+                            <Link to={"/employees"}>hapus</Link>
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

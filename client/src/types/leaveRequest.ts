@@ -1,5 +1,4 @@
-import type { EmployeeName } from "./employee.ts";
-import type { UserWithEmployee } from "./user.ts";
+import type { ROLE } from "./user.ts";
 export type status = "PENDING" | "APPROVED" | "REJECTED";
 
 export interface LeaveRequest {
@@ -12,9 +11,28 @@ export interface LeaveRequest {
     reviewedBy: string | null;
     createdAt: string;
     updatedAt: string;
-    employee: EmployeeName;
-    reviewer?: UserWithEmployee;
+    employee: {
+        id: string;
+        name: string;
+        user?: {
+            id: string;
+            email: string;
+            role: ROLE;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+    reviewer?: {
+        id: string;
+        email: string;
+        role: ROLE;
+        employee?: {
+            id: string;
+            name: string;
+        };
+    };
 }
+
 export interface LeaveRequestPayload {
     employeeId: string;
     startDate: string;

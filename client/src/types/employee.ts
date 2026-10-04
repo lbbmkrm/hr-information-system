@@ -8,11 +8,6 @@ export interface Employee {
     userId?: string;
 }
 
-export interface EmployeeName {
-    id: string;
-    name: string;
-}
-
 export interface CreateEmployeePayload {
     name: string;
     position: string;

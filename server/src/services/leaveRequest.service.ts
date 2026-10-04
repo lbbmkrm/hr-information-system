@@ -82,12 +82,10 @@ export default class LeaveRequestService {
             throw new AppError("Anda tidak memiliki izin untuk mengubah pengajuan cuti ini", 403);
         }
 
-        if (data.startDate) {
-            dateValidator(data.startDate, oldLeaveRequest.endDate);
-        }
-        if (data.endDate) {
-            dateValidator(oldLeaveRequest.startDate, data.endDate);
-        }
+        const startDate = data.startDate ?? oldLeaveRequest.startDate;
+        const endDate = data.endDate ?? oldLeaveRequest.endDate;
+
+        dateValidator(startDate, endDate);
 
         return this.leaveRequestRepository.update(id, data);
     }

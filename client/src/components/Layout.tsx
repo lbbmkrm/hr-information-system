@@ -6,6 +6,7 @@ import type { Employee } from "../types/employee.ts";
 import EmployeePolicy from "../policies/EmployeePolicy.ts";
 import type { JwtPayload } from "../types/auth.ts";
 import { getErrorMessage } from "../utils/getErrorMessage.ts";
+import LeaveRequestPolicy from "../policies/LeaveRequestPolicy.ts";
 
 export default function Layout() {
     const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function Layout() {
                             Karyawan
                         </Link>
                     )}
-                    {EmployeePolicy.viewAny(user as JwtPayload) && (
+                    {LeaveRequestPolicy.viewAny(user as JwtPayload) && (
                         <Link to={"/leave-requests"} className={"text-gray-600 hover:text-black"}>
                             Cuti
                         </Link>

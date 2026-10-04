@@ -1,15 +1,9 @@
-import type { EmployeeName } from "./employee.ts";
-
 export interface User {
     id: string;
     email: string;
     role: string;
     createdAt: Date;
     updatedAt: Date;
-}
-export interface UserWithEmployee {
-    id: string;
-    employee: EmployeeName;
 }
 
 export enum ROLE {

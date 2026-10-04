@@ -18,7 +18,7 @@ interface FormData {
     userId?: string | null;
 }
 
-export default function EmployeeEdit() {
+export default function EditEmployee() {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const [employee, setEmployee] = useState<Employee | null>(null);

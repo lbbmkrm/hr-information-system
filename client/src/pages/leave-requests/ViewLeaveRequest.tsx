@@ -3,14 +3,18 @@ import { useEffect, useState } from "react";
 import type { LeaveRequest } from "../../types/leaveRequest.ts";
 import { getLeaveRequestById } from "../../api/leaveRequestApi.ts";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
+import LeaveRequestPolicy from "../../policies/LeaveRequestPolicy.ts";
+import { useAuth } from "../../contexts/AuthContext.tsx";
+import type { JwtPayload } from "../../types/auth.ts";
 
-export default function LeaveRequestDetail() {
+export default function ViewLeaveRequest() {
     const location = useLocation();
     const { id } = useParams<{ id: string }>();
 
     const [leaveRequest, setLeaveRequest] = useState<LeaveRequest | null>(
         (location.state as LeaveRequest) ?? null,
     );
+    const { user } = useAuth();
     const [loading, setLoading] = useState<boolean>(!location.state);
     const [error, setError] = useState<string>("");
 
@@ -51,18 +55,20 @@ export default function LeaveRequestDetail() {
         <div className="container mx-auto max-w-2xl p-6">
             <div className={"flex items-center justify-between p-2"}>
                 <h1 className="text-2xl font-semibold text-gray-800">Detail Permintaan Cuti</h1>
-                <button
-                    className={
-                        "cursor-pointer rounded border border-sky-500 p-2 hover:bg-sky-500 hover:text-white"
-                    }
-                >
-                    <Link
-                        to={`/leave-requests/edit/${leaveRequest.id}/status`}
-                        state={leaveRequest}
+                {LeaveRequestPolicy.review(user as JwtPayload, leaveRequest) && (
+                    <button
+                        className={
+                            "cursor-pointer rounded border border-sky-500 p-2 hover:bg-sky-500 hover:text-white"
+                        }
                     >
-                        Update status
-                    </Link>
-                </button>
+                        <Link
+                            to={`/leave-requests/edit/${leaveRequest.id}/status`}
+                            state={leaveRequest}
+                        >
+                            Update status
+                        </Link>
+                    </button>
+                )}
             </div>
 
             <div className="overflow-hidden rounded-lg border border-gray-200">
@@ -106,9 +112,7 @@ export default function LeaveRequestDetail() {
                             <th className="w-48 bg-gray-50 px-4 py-3 font-medium text-gray-600">
                                 Di review oleh
                             </th>
-                            <td className="px-4 py-3">
-                                {leaveRequest.reviewer?.employee.name || "-"}
-                            </td>
+                            <td className="px-4 py-3">{leaveRequest?.reviewer?.email || "-"}</td>
                         </tr>
                     </tbody>
                 </table>

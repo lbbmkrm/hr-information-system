@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext.tsx";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
-export default function Login() {
+export default function LoginPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || "/dashboard";

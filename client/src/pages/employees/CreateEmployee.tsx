@@ -3,7 +3,7 @@ import { createEmployee } from "../../api/employeeApi.ts";
 import { useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
-export default function EmployeeForm() {
+export default function CreateEmployee() {
     const navigate = useNavigate();
 
     const [name, setName] = useState("");
