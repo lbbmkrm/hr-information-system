@@ -1,40 +1,19 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.tsx";
-import { useEffect, useState } from "react";
-import { getEmployeeByUserId } from "../api/employeeApi.ts";
-import type { Employee } from "../types/employee.ts";
 import EmployeePolicy from "../policies/EmployeePolicy.ts";
 import type { JwtPayload } from "../types/auth.ts";
-import { getErrorMessage } from "../utils/getErrorMessage.ts";
 import LeaveRequestPolicy from "../policies/LeaveRequestPolicy.ts";
+import { useEmployee } from "../contexts/EmployeeContext.tsx";
 
 export default function Layout() {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
-    const [employee, setEmployee] = useState<Employee | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const { employee } = useEmployee();
     function handleLogout() {
         void logout();
         navigate("/login");
     }
 
-    useEffect(() => {
-        async function getEmployeeData(id: string) {
-            try {
-                const res = await getEmployeeByUserId(id);
-                setEmployee(res);
-            } catch (e) {
-                console.error("Error getEmployeeData:", e);
-                setError(getErrorMessage(e, "Gagal mengambil data karyawan."));
-            }
-        }
-
-        void getEmployeeData(user?.userId as string);
-    }, [user]);
-
-    if (error) {
-        return <div>{error}</div>;
-    }
     return (
         <div className="min-h-screen bg-gray-50">
             <nav className="flex items-center justify-between bg-white px-6 py-4 shadow">
@@ -62,13 +41,17 @@ export default function Layout() {
                     )}
                 </div>
                 <div className="flex items-center gap-4">
-                    <Link
-                        to={`/employees/${employee?.id}`}
-                        state={employee?.id}
-                        className={"text-sm text-gray-500"}
-                    >
-                        {user?.email}
-                    </Link>
+                    {employee ? (
+                        <Link
+                            to={`/employees/${employee.id}`}
+                            state={employee.id}
+                            className={"text-sm text-gray-500"}
+                        >
+                            {user?.email}
+                        </Link>
+                    ) : (
+                        <span className="text-sm text-gray-500">{user?.email}</span>
+                    )}
                     <button
                         onClick={handleLogout}
                         className={"text-sm text-red-500 hover:text-red-700"}

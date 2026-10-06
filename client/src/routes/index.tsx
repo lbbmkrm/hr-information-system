@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import {createBrowserRouter, Navigate} from "react-router-dom";
 import LoginPage from "../pages/auth/LoginPage.tsx";
 import Layout from "../components/Layout.tsx";
 import DashboardPage from "../pages/dashboard/DashboardPage.tsx";
@@ -14,6 +14,10 @@ import ReviewLeaveRequest from "../pages/leave-requests/ReviewLeaveRequest.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import GuestRoute from "../components/GuestRoute.tsx";
 import EditLeaveRequest from "../pages/leave-requests/EditLeaveRequest.tsx";
+import ListUsers from "../pages/users/ListUsers.tsx";
+import CreateUser from "../pages/users/CreateUser.tsx";
+import ViewUser from "../pages/users/ViewUser.tsx";
+import EditUser from "../pages/users/EditUser.tsx";
 
 const router = createBrowserRouter([
     {
@@ -31,7 +35,19 @@ const router = createBrowserRouter([
             {
                 element: <Layout />,
                 children: [
+                    {
+                      path: "/", element: <Navigate to={"/dashboard"} replace={true}/>
+                    },
                     { path: "/dashboard", element: <DashboardPage /> },
+                    {
+                        path: "/users",
+                        children: [
+                            { index: true, element: <ListUsers /> },
+                            { path: "add", element: <CreateUser /> },
+                            { path: ":id", element: <ViewUser /> },
+                            { path: "edit/:id", element: <EditUser /> },
+                        ],
+                    },
                     {
                         path: "/employees",
                         children: [

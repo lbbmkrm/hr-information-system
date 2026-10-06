@@ -3,6 +3,7 @@ import type { Employee } from "../types/employee.ts";
 import { getEmployeeByUserId } from "../api/employeeApi.ts";
 import { useAuth } from "./AuthContext.tsx";
 import { EmployeeContext } from "./EmployeeContext.tsx";
+import axios from "axios";
 import { getErrorMessage } from "../utils/getErrorMessage.ts";
 
 interface EmployeeState {
@@ -39,6 +40,15 @@ export default function EmployeeProvider({ children }: { children: ReactNode }) 
                 });
             } catch (error) {
                 console.error(error);
+                if (axios.isAxiosError(error) && error.response?.status === 404) {
+                    setState({
+                        employee: null,
+                        loading: false,
+                        error: null,
+                    });
+                    return;
+                }
+
                 setState({
                     employee: null,
                     loading: false,

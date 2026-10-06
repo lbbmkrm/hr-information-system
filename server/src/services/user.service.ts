@@ -81,6 +81,10 @@ export default class UserService {
             throw new AppError("User tidak ditemukan", 404);
         }
 
+        if(authenticatedUser.userId === id) {
+            throw new AppError("Tidak dapat menghapus akun sendiri.", 400);
+        }
+
         await this.userRepository.delete(id);
     }
 }
