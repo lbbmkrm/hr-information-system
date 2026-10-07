@@ -95,15 +95,26 @@ export default function EditUser() {
     }
 
     if (error && !formData.email) {
-        return <div role="alert" className="p-8 text-red-600">{error}</div>;
+        return (
+            <div role="alert" className="p-8 text-red-600">
+                {error}
+            </div>
+        );
     }
 
     return (
         <div className="container mx-auto max-w-lg p-6">
             <h1 className="mb-6 text-2xl font-semibold text-gray-800">Ubah User</h1>
 
-            <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border bg-white p-6 shadow">
-                {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+            <form
+                onSubmit={handleSubmit}
+                className="space-y-4 rounded-lg border bg-white p-6 shadow"
+            >
+                {error && (
+                    <p role="alert" className="text-sm text-red-600">
+                        {error}
+                    </p>
+                )}
 
                 <div>
                     <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">

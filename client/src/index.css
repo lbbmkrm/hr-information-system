@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+@theme {
+    /* Netral — abu nyaris tanpa saturasi */
+    --color-bg: #f7f7f6;
+    --color-surface: #ffffff;
+    --color-border: #e2e2e0;
+    --color-text: #222221;
+    --color-text-secondary: #6b6b69;
+    --color-text-muted: #9c9c99;
+
+    /* Aksen — dusty blue/slate */
+    --color-accent: #5c7a92;
+    --color-accent-hover: #4a6578;
+    --color-accent-soft: #e7edf1;
+
+    /* Status — pastel lembut */
+    --color-pending-bg: #fdf4d9;
+    --color-pending-text: #8a6a1b;
+    --color-approved-bg: #deefe3;
+    --color-approved-text: #2e6b4a;
+    --color-rejected-bg: #fae4e4;
+    --color-rejected-text: #a13e3e;
+}

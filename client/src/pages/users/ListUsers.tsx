@@ -45,12 +45,7 @@ export default function ListUsers() {
     }
 
     if (error) {
-        return (
-            <ErrorState
-                message={error}
-                onRetry={() => void fetchUsers()}
-            />
-        );
+        return <ErrorState message={error} onRetry={() => void fetchUsers()} />;
     }
 
     return (
@@ -66,58 +61,58 @@ export default function ListUsers() {
             </div>
 
             <div className="overflow-x-auto rounded-lg border border-gray-200">
-                <table className="w-full text-sm text-left text-gray-700">
+                <table className="w-full text-left text-sm text-gray-700">
                     <thead className="bg-gray-100 text-xs text-gray-600 uppercase">
-                    <tr>
-                        <th className="px-4 py-3">Email</th>
-                        <th className="px-4 py-3">Role</th>
-                        <th className="px-4 py-3">Dibuat</th>
-                        <th className="px-4 py-3">Diperbarui</th>
-                        <th className="px-4 py-3 text-center">Aksi</th>
-                    </tr>
+                        <tr>
+                            <th className="px-4 py-3">Email</th>
+                            <th className="px-4 py-3">Role</th>
+                            <th className="px-4 py-3">Dibuat</th>
+                            <th className="px-4 py-3">Diperbarui</th>
+                            <th className="px-4 py-3 text-center">Aksi</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {users.map((user) => (
-                        <tr key={user.id} className="border-t border-gray-200 hover:bg-gray-50">
-                            <td className="px-4 py-3">{user.email}</td>
-                            <td className="px-4 py-3">{user.role}</td>
-                            <td className="px-4 py-3">
-                                {new Date(user.createdAt).toLocaleDateString("id-ID")}
-                            </td>
-                            <td className="px-4 py-3">
-                                {new Date(user.updatedAt).toLocaleDateString("id-ID")}
-                            </td>
-                            <td className="px-4 py-3">
-                                <div className="flex justify-center gap-2">
-                                    <Link
-                                        to={`/users/${user.id}`}
-                                        className="rounded bg-sky-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-sky-700"
-                                    >
-                                        Detail
-                                    </Link>
-                                    <Link
-                                        to={`/users/edit/${user.id}`}
-                                        className="rounded bg-yellow-500 px-3 py-1 text-xs font-medium text-white transition hover:bg-yellow-600"
-                                    >
-                                        Edit
-                                    </Link>
-                                    <button
-                                        onClick={() => handleDelete(user.id)}
-                                        className="rounded bg-red-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-700"
-                                    >
-                                        Hapus
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                    {users.length === 0 && (
-                        <tr>
-                            <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                                Belum ada user.
-                            </td>
-                        </tr>
-                    )}
+                        {users.map((user) => (
+                            <tr key={user.id} className="border-t border-gray-200 hover:bg-gray-50">
+                                <td className="px-4 py-3">{user.email}</td>
+                                <td className="px-4 py-3">{user.role}</td>
+                                <td className="px-4 py-3">
+                                    {new Date(user.createdAt).toLocaleDateString("id-ID")}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {new Date(user.updatedAt).toLocaleDateString("id-ID")}
+                                </td>
+                                <td className="px-4 py-3">
+                                    <div className="flex justify-center gap-2">
+                                        <Link
+                                            to={`/users/${user.id}`}
+                                            className="rounded bg-sky-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-sky-700"
+                                        >
+                                            Detail
+                                        </Link>
+                                        <Link
+                                            to={`/users/edit/${user.id}`}
+                                            className="rounded bg-yellow-500 px-3 py-1 text-xs font-medium text-white transition hover:bg-yellow-600"
+                                        >
+                                            Edit
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDelete(user.id)}
+                                            className="rounded bg-red-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-700"
+                                        >
+                                            Hapus
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        {users.length === 0 && (
+                            <tr>
+                                <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                                    Belum ada user.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>

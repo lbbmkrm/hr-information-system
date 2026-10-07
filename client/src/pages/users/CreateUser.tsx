@@ -30,7 +30,10 @@ export default function CreateUser() {
         <div className="container mx-auto max-w-lg p-6">
             <h1 className="mb-6 text-2xl font-semibold text-gray-800">Tambah User</h1>
 
-            <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border bg-white p-6 shadow">
+            <form
+                onSubmit={handleSubmit}
+                className="space-y-4 rounded-lg border bg-white p-6 shadow"
+            >
                 {error && <p className="text-sm text-red-600">{error}</p>}
 
                 <div>

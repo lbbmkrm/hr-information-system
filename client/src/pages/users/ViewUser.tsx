@@ -46,7 +46,11 @@ export default function ViewUser() {
     }
 
     if (error) {
-        return <div role="alert" className="p-8 text-red-600">{error}</div>;
+        return (
+            <div role="alert" className="p-8 text-red-600">
+                {error}
+            </div>
+        );
     }
 
     if (!user) {

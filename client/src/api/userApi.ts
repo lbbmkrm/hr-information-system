@@ -1,9 +1,4 @@
-import type {
-    CreateUserPayload,
-    EditUserPayload,
-    GetUsersFilter,
-    User,
-} from "../types/user.ts";
+import type { CreateUserPayload, EditUserPayload, GetUsersFilter, User } from "../types/user.ts";
 import apiClient from "./client.ts";
 
 export async function getUsers(filters?: GetUsersFilter): Promise<User[]> {
