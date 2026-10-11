@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type SubmitEvent } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { editUser, getUserById } from "../../api/userApi.ts";
 import { ROLE, type EditUserPayload, type User } from "../../types/user.ts";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
@@ -13,11 +13,13 @@ interface UserFormData {
 export default function EditUser() {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
+
     const [formData, setFormData] = useState<UserFormData>({
         email: "",
         password: "",
         role: ROLE.EMPLOYEE,
     });
+
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -35,7 +37,9 @@ export default function EditUser() {
             try {
                 setLoading(true);
                 setError(null);
+
                 const user: User = await getUserById(id);
+
                 if (isMounted) {
                     setFormData({
                         email: user.email,
@@ -45,15 +49,19 @@ export default function EditUser() {
                 }
             } catch (requestError) {
                 console.error(requestError);
+
                 if (isMounted) {
                     setError(getErrorMessage(requestError, "Gagal mengambil data user."));
                 }
             } finally {
-                if (isMounted) setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         }
 
         void fetchUser();
+
         return () => {
             isMounted = false;
         };
@@ -61,11 +69,16 @@ export default function EditUser() {
 
     function handleChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = event.target;
-        setFormData((current) => ({ ...current, [name]: value }));
+
+        setFormData((current) => ({
+            ...current,
+            [name]: value,
+        }));
     }
 
     async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
+
         if (!id) {
             setError("ID user tidak ditemukan.");
             return;
@@ -80,10 +93,13 @@ export default function EditUser() {
         try {
             setSubmitting(true);
             setError(null);
+
             await editUser(id, payload);
+
             navigate(`/users/${id}`, { replace: true });
         } catch (requestError) {
             console.error(requestError);
+
             setError(getErrorMessage(requestError, "Gagal memperbarui user."));
         } finally {
             setSubmitting(false);
@@ -91,99 +107,182 @@ export default function EditUser() {
     }
 
     if (loading) {
-        return <div className="p-8 text-gray-500">Memuat data user...</div>;
+        return (
+            <div className="mx-auto max-w-3xl">
+                <div className="mb-6">
+                    <div className="bg-border h-4 w-24 animate-pulse rounded" />
+                    <div className="bg-border mt-4 h-8 w-48 animate-pulse rounded" />
+                    <div className="bg-border mt-2 h-4 w-72 animate-pulse rounded" />
+                </div>
+
+                <div className="border-border bg-surface space-y-6 rounded-lg border p-6">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                        <div key={index}>
+                            <div className="bg-border h-4 w-24 animate-pulse rounded" />
+                            <div className="bg-border mt-2 h-10 w-full animate-pulse rounded" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
     }
 
     if (error && !formData.email) {
         return (
-            <div role="alert" className="p-8 text-red-600">
-                {error}
+            <div className="mx-auto max-w-3xl">
+                <Link
+                    to="/users"
+                    className="text-text-secondary hover:text-text text-sm transition"
+                >
+                    ← Kembali ke Users
+                </Link>
+
+                <div
+                    role="alert"
+                    className="border-rejected-bg bg-rejected-bg text-rejected-text mt-6 rounded-lg border p-5 text-sm"
+                >
+                    {error}
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => navigate("/users")}
+                    className="border-border text-text-secondary hover:bg-bg mt-4 rounded-md border px-4 py-2 text-sm font-medium transition"
+                >
+                    Kembali
+                </button>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto max-w-lg p-6">
-            <h1 className="mb-6 text-2xl font-semibold text-gray-800">Ubah User</h1>
+        <div className="mx-auto max-w-3xl">
+            <Link
+                to={`/users/${id}`}
+                className="text-text-secondary hover:text-text text-sm transition"
+            >
+                ← Kembali ke Detail User
+            </Link>
+
+            <div className="mt-4 mb-6">
+                <h1 className="text-text text-2xl font-semibold tracking-tight">Ubah User</h1>
+
+                <p className="text-text-secondary mt-1 text-sm">
+                    Perbarui informasi akun dan hak akses pengguna.
+                </p>
+            </div>
 
             <form
                 onSubmit={handleSubmit}
-                className="space-y-4 rounded-lg border bg-white p-6 shadow"
+                className="border-border bg-surface overflow-hidden rounded-lg border"
             >
-                {error && (
-                    <p role="alert" className="text-sm text-red-600">
-                        {error}
-                    </p>
-                )}
+                <div className="space-y-5 p-6">
+                    <div>
+                        <h2 className="text-text text-base font-semibold">Informasi Akun</h2>
 
-                <div>
-                    <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
-                        Email
-                    </label>
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        autoComplete="email"
-                        required
-                        className="w-full rounded border px-3 py-2"
-                    />
+                        <p className="text-text-secondary mt-1 text-sm">
+                            Ubah email, role, atau password akun pengguna.
+                        </p>
+                    </div>
+
+                    {error && (
+                        <div
+                            role="alert"
+                            className="border-rejected-bg bg-rejected-bg text-rejected-text rounded-md border px-4 py-3 text-sm"
+                        >
+                            {error}
+                        </div>
+                    )}
+
+                    <div>
+                        <label
+                            htmlFor="email"
+                            className="text-text mb-1.5 block text-sm font-medium"
+                        >
+                            Email
+                        </label>
+
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            autoComplete="email"
+                            required
+                            disabled={submitting}
+                            className="border-border bg-surface text-text focus:border-accent focus:ring-accent-soft disabled:bg-bg w-full rounded-md border px-3 py-2.5 text-sm transition outline-none focus:ring-2 disabled:cursor-not-allowed"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="role"
+                            className="text-text mb-1.5 block text-sm font-medium"
+                        >
+                            Role
+                        </label>
+
+                        <select
+                            id="role"
+                            name="role"
+                            value={formData.role}
+                            onChange={handleChange}
+                            disabled={submitting}
+                            className="border-border bg-surface text-text focus:border-accent focus:ring-accent-soft disabled:bg-bg w-full rounded-md border px-3 py-2.5 text-sm transition outline-none focus:ring-2 disabled:cursor-not-allowed"
+                        >
+                            <option value={ROLE.ADMIN}>ADMIN</option>
+                            <option value={ROLE.HR}>HR</option>
+                            <option value={ROLE.EMPLOYEE}>EMPLOYEE</option>
+                        </select>
+
+                        <p className="text-text-secondary mt-2 text-xs">
+                            Role menentukan hak akses pengguna di dalam sistem.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="password"
+                            className="text-text mb-1.5 block text-sm font-medium"
+                        >
+                            Password Baru
+                            <span className="text-text-muted ml-1 font-normal">(Opsional)</span>
+                        </label>
+
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            autoComplete="new-password"
+                            minLength={6}
+                            placeholder="Masukkan password baru"
+                            disabled={submitting}
+                            className="border-border bg-surface text-text placeholder:text-text-muted focus:border-accent focus:ring-accent-soft disabled:bg-bg w-full rounded-md border px-3 py-2.5 text-sm transition outline-none focus:ring-2 disabled:cursor-not-allowed"
+                        />
+
+                        <p className="text-text-secondary mt-2 text-xs">
+                            Kosongkan jika tidak ingin mengubah password.
+                        </p>
+                    </div>
                 </div>
 
-                <div>
-                    <label htmlFor="role" className="mb-1 block text-sm font-medium text-gray-700">
-                        Role
-                    </label>
-                    <select
-                        id="role"
-                        name="role"
-                        value={formData.role}
-                        onChange={handleChange}
-                        className="w-full rounded border px-3 py-2"
-                    >
-                        <option value="ADMIN">ADMIN</option>
-                        <option value="HR">HR</option>
-                        <option value="EMPLOYEE">EMPLOYEE</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label
-                        htmlFor="password"
-                        className="mb-1 block text-sm font-medium text-gray-700"
-                    >
-                        Password baru (opsional)
-                    </label>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        autoComplete="new-password"
-                        minLength={6}
-                        className="w-full rounded border px-3 py-2"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">
-                        Kosongkan jika tidak ingin mengubah password.
-                    </p>
-                </div>
-
-                <div className="flex justify-end gap-2">
+                <div className="border-border bg-bg/50 flex flex-col-reverse gap-2 border-t px-6 py-4 sm:flex-row sm:justify-end">
                     <button
                         type="button"
                         onClick={() => navigate(`/users/${id}`)}
                         disabled={submitting}
-                        className="rounded border px-4 py-2 disabled:opacity-50"
+                        className="border-border bg-surface text-text-secondary hover:bg-bg rounded-md border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         Batal
                     </button>
+
                     <button
                         type="submit"
                         disabled={submitting}
-                        className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
+                        className="bg-accent hover:bg-accent-hover rounded-md px-4 py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {submitting ? "Menyimpan..." : "Simpan Perubahan"}
                     </button>

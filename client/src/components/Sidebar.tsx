@@ -1,11 +1,4 @@
-import {
-    CalendarDays,
-    History,
-    LayoutDashboard,
-    LogOut,
-    Users,
-    X,
-} from "lucide-react";
+import { CalendarDays, History, LayoutDashboard, LogOut, Users, X } from "lucide-react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext.tsx";
@@ -19,10 +12,7 @@ type SidebarProps = {
     onClose: () => void;
 };
 
-export default function Sidebar({
-    open,
-    onClose,
-}: SidebarProps) {
+export default function Sidebar({ open, onClose }: SidebarProps) {
     const navigate = useNavigate();
 
     const { user, logout } = useAuth();
@@ -35,10 +25,10 @@ export default function Sidebar({
 
     const navLinkClass = ({ isActive }: { isActive: boolean }) =>
         `flex items-center gap-3 rounded-md px-3 py-2 text-sm transition ${
-    isActive
-        ? "bg-accent-soft text-accent font-medium"
-        : "text-text-secondary hover:bg-bg hover:text-text"
-}`;
+            isActive
+                ? "bg-accent-soft text-accent font-medium"
+                : "text-text-secondary hover:bg-bg hover:text-text"
+        }`;
 
     return (
         <>
@@ -53,22 +43,15 @@ export default function Sidebar({
             )}
 
             <nav
-                className={`
-fixed inset-y-0 left-0 z-50 w-60
-bg-surface border-r border-border
-transform transition-transform duration-200
-md:static md:z-auto md:translate-x-0
-${open ? "translate-x-0" : "-translate-x-full"}
-`}
+                className={`bg-surface border-border fixed inset-y-0 left-0 z-50 w-60 transform border-r transition-transform duration-200 md:static md:z-auto md:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"} `}
             >
-                <div className="h-full flex flex-col p-4">
-
+                <div className="flex h-full flex-col p-4">
                     {/* Brand */}
                     <div className="flex items-center justify-between px-2 py-2">
                         <Link
                             to="/dashboard"
                             onClick={onClose}
-                            className="text-lg font-semibold text-text"
+                            className="text-text text-lg font-semibold"
                         >
                             HRIS
                         </Link>
@@ -76,7 +59,7 @@ ${open ? "translate-x-0" : "-translate-x-full"}
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-md p-1 text-text-secondary hover:bg-bg hover:text-text md:hidden"
+                            className="text-text-secondary hover:bg-bg hover:text-text rounded-md p-1 md:hidden"
                             aria-label="Close sidebar"
                         >
                             <X className="size-5" />
@@ -84,11 +67,10 @@ ${open ? "translate-x-0" : "-translate-x-full"}
                     </div>
 
                     {/* Navigation */}
-                    <div className="mt-8 flex-1 flex flex-col gap-6">
-
+                    <div className="mt-8 flex flex-1 flex-col gap-6">
                         {/* Main */}
                         <div>
-                            <p className="px-2 mb-2 text-xs font-medium uppercase tracking-wide text-text-muted">
+                            <p className="text-text-muted mb-2 px-2 text-xs font-medium tracking-wide uppercase">
                                 Main
                             </p>
 
@@ -146,7 +128,7 @@ ${open ? "translate-x-0" : "-translate-x-full"}
                         {/* Administration */}
                         {user?.role === "ADMIN" && (
                             <div>
-                                <p className="px-2 mb-2 text-xs font-medium uppercase tracking-wide text-text-muted">
+                                <p className="text-text-muted mb-2 px-2 text-xs font-medium tracking-wide uppercase">
                                     Administration
                                 </p>
 
@@ -167,28 +149,24 @@ ${open ? "translate-x-0" : "-translate-x-full"}
                     </div>
 
                     {/* User Area */}
-                    <div className="border-t border-border pt-4">
+                    <div className="border-border border-t pt-4">
                         {employee ? (
                             <Link
                                 to={`/employees/${employee.id}`}
                                 onClick={onClose}
-                                className="block rounded-md px-2 py-2 hover:bg-bg"
+                                className="hover:bg-bg block rounded-md px-2 py-2"
                             >
-                                <p className="text-sm font-medium text-text">
-                                    {employee.name}
-                                </p>
+                                <p className="text-text text-sm font-medium">{employee.name}</p>
 
-                                <p className="mt-0.5 truncate text-xs text-text-muted">
+                                <p className="text-text-muted mt-0.5 truncate text-xs">
                                     {user?.email}
                                 </p>
                             </Link>
                         ) : (
                             <div className="px-2 py-2">
-                                <p className="text-sm font-medium text-text">
-                                    {user?.role}
-                                </p>
+                                <p className="text-text text-sm font-medium">{user?.role}</p>
 
-                                <p className="mt-0.5 truncate text-xs text-text-muted">
+                                <p className="text-text-muted mt-0.5 truncate text-xs">
                                     {user?.email}
                                 </p>
                             </div>
@@ -196,7 +174,7 @@ ${open ? "translate-x-0" : "-translate-x-full"}
 
                         <button
                             onClick={handleLogout}
-                            className="mt-2 flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-text-secondary transition hover:bg-bg hover:text-text"
+                            className="text-text-secondary hover:bg-bg hover:text-text mt-2 flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition"
                         >
                             <LogOut className="size-4" />
                             <span>Logout</span>

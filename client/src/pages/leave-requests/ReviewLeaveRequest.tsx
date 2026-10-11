@@ -2,9 +2,9 @@ import { type ChangeEvent, type SubmitEvent, useEffect, useState } from "react";
 import type {
     LeaveRequest,
     LeaveRequestUpdateStatus,
-    status as LeaveStatus,
+    Status as LeaveStatus,
 } from "../../types/leaveRequest.ts";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getLeaveRequestById, updateLeaveRequestStatus } from "../../api/leaveRequestApi.ts";
 import { getErrorMessage } from "../../utils/getErrorMessage.ts";
 
@@ -22,44 +22,63 @@ export default function ReviewLeaveRequest() {
     const [leaveRequest, setLeaveRequest] = useState<LeaveRequest | null>(
         (location.state as LeaveRequest) ?? null,
     );
+
     const [loading, setLoading] = useState<boolean>(!location.state);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState<boolean>(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (location.state) return;
+        if (location.state || !id) return;
 
         let isMounted = true;
+
         async function fetchLeaveRequest() {
             try {
                 setLoading(true);
                 setError(null);
+
                 const response = await getLeaveRequestById(id as string);
-                if (isMounted) setLeaveRequest(response);
+
+                if (isMounted) {
+                    setLeaveRequest(response);
+                }
             } catch (e) {
                 console.error(e);
+
                 if (isMounted) {
                     setError(getErrorMessage(e, "Gagal memuat data pengajuan cuti."));
                 }
             } finally {
-                if (isMounted) setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         }
 
         void fetchLeaveRequest();
+
         return () => {
             isMounted = false;
         };
     }, [location.state, id]);
 
-    const handleStatusChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    function handleStatusChange(e: ChangeEvent<HTMLSelectElement>) {
         const value = e.target.value as LeaveStatus;
-        setLeaveRequest((prev) => (prev ? { ...prev, status: value } : prev));
-    };
 
-    const handleSubmit = async (e: SubmitEvent) => {
+        setLeaveRequest((prev) =>
+            prev
+                ? {
+                      ...prev,
+                      status: value,
+                  }
+                : prev,
+        );
+    }
+
+    async function handleSubmit(e: SubmitEvent) {
         e.preventDefault();
+
         if (!leaveRequest || !id) return;
 
         try {
@@ -71,132 +90,198 @@ export default function ReviewLeaveRequest() {
             };
 
             await updateLeaveRequestStatus(id, payload);
+
             navigate(`/leave-requests/${leaveRequest.id}`);
         } catch (e) {
             console.error(e);
+
             setSubmitError(getErrorMessage(e, "Gagal memperbarui status pengajuan cuti."));
         } finally {
             setSubmitting(false);
         }
-    };
+    }
 
     if (loading) {
         return (
-            <div className="container mx-auto max-w-2xl p-6">
-                <p>Memuat data...</p>
+            <div className="mx-auto max-w-3xl">
+                <div className="mb-6">
+                    <div className="bg-border h-4 w-24 animate-pulse rounded" />
+                    <div className="bg-border mt-4 h-8 w-72 animate-pulse rounded" />
+                    <div className="bg-border mt-2 h-4 w-96 max-w-full animate-pulse rounded" />
+                </div>
+
+                <div className="border-border bg-surface rounded-lg border">
+                    <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
+                        {Array.from({ length: 5 }).map((_, index) => (
+                            <div key={index}>
+                                <div className="bg-border h-4 w-24 animate-pulse rounded" />
+                                <div className="bg-border mt-2 h-5 w-40 animate-pulse rounded" />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="border-border border-t p-6">
+                        <div className="bg-border h-4 w-16 animate-pulse rounded" />
+                        <div className="bg-border mt-2 h-10 w-full animate-pulse rounded" />
+                    </div>
+                </div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="container mx-auto max-w-2xl p-6">
-                <p className="text-red-600">{error}</p>
+            <div className="mx-auto max-w-3xl">
+                <Link to="/leave-requests" className="text-text-secondary hover:text-text text-sm">
+                    ← Kembali ke Pengajuan Cuti
+                </Link>
+
+                <div className="border-border bg-surface mt-6 rounded-lg border p-6">
+                    <p className="text-rejected-text text-sm">{error}</p>
+                </div>
             </div>
         );
     }
 
     if (!leaveRequest) {
         return (
-            <div className="container mx-auto max-w-2xl p-6">
-                <p>Data pengajuan cuti tidak ditemukan.</p>
+            <div className="mx-auto max-w-3xl">
+                <Link to="/leave-requests" className="text-text-secondary hover:text-text text-sm">
+                    ← Kembali ke Pengajuan Cuti
+                </Link>
+
+                <div className="border-border bg-surface mt-6 rounded-lg border p-6">
+                    <p className="text-text-secondary text-sm">
+                        Data pengajuan cuti tidak ditemukan.
+                    </p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto max-w-2xl rounded-lg border p-6">
-            <h1 className="mb-4 text-xl font-semibold">Ubah Status Pengajuan Cuti</h1>
+        <div className="mx-auto max-w-3xl">
+            <Link
+                to={`/leave-requests/${leaveRequest.id}`}
+                className="text-text-secondary hover:text-text text-sm"
+            >
+                ← Kembali ke Detail Pengajuan
+            </Link>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-                <div className="flex items-center justify-between gap-4">
-                    <label htmlFor="name">Nama</label>
-                    <span>:</span>
-                    <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        value={leaveRequest.employee.name}
-                        readOnly
-                        className="w-2/3 rounded border bg-gray-100 px-2 py-1"
-                    />
-                </div>
+            <div className="mt-4 mb-6">
+                <h1 className="text-text text-2xl font-semibold">Review Pengajuan Cuti</h1>
 
-                <div className="flex items-center justify-between gap-4">
-                    <label htmlFor="reason">Alasan</label>
-                    <span>:</span>
-                    <input
-                        id="reason"
-                        name="reason"
-                        type="text"
-                        value={leaveRequest.reason ?? ""}
-                        readOnly
-                        className="w-2/3 rounded border bg-gray-100 px-2 py-1"
-                    />
-                </div>
+                <p className="text-text-secondary mt-1 text-sm">
+                    Tinjau pengajuan cuti dan tentukan status persetujuannya.
+                </p>
+            </div>
 
-                <div className="flex items-center justify-between gap-4">
-                    <label htmlFor="startDate">Tanggal Mulai</label>
-                    <span>:</span>
-                    <input
-                        id="startDate"
-                        name="startDate"
-                        type="text"
-                        value={new Date(leaveRequest.startDate).toLocaleDateString("id-ID")}
-                        readOnly
-                        className="w-2/3 rounded border bg-gray-100 px-2 py-1"
-                    />
-                </div>
+            <form onSubmit={handleSubmit}>
+                <div className="border-border bg-surface overflow-hidden rounded-lg border">
+                    <div className="border-border border-b px-6 py-5">
+                        <h2 className="text-text text-base font-semibold">Informasi Pengajuan</h2>
 
-                <div className="flex items-center justify-between gap-4">
-                    <label htmlFor="endDate">Tanggal Berakhir</label>
-                    <span>:</span>
-                    <input
-                        id="endDate"
-                        name="endDate"
-                        type="text"
-                        value={new Date(leaveRequest.endDate).toLocaleDateString("id-ID")}
-                        readOnly
-                        className="w-2/3 rounded border bg-gray-100 px-2 py-1"
-                    />
-                </div>
+                        <p className="text-text-secondary mt-1 text-sm">
+                            Informasi pengajuan hanya dapat dilihat pada halaman review.
+                        </p>
+                    </div>
 
-                <div className="flex items-center justify-between gap-4">
-                    <label htmlFor="status">Status</label>
-                    <span>:</span>
-                    <select
-                        id="status"
-                        name="status"
-                        value={leaveRequest.status}
-                        onChange={handleStatusChange}
-                        className="w-2/3 rounded border px-2 py-1"
-                    >
-                        {STATUS_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                    <div className="grid grid-cols-1 gap-x-8 gap-y-6 p-6 md:grid-cols-2">
+                        <div>
+                            <dt className="text-text-muted text-xs font-medium tracking-wide uppercase">
+                                Nama Karyawan
+                            </dt>
+                            <dd className="text-text mt-1 text-sm">{leaveRequest.employee.name}</dd>
+                        </div>
 
-                {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+                        <div>
+                            <dt className="text-text-muted text-xs font-medium tracking-wide uppercase">
+                                Status Saat Ini
+                            </dt>
+                            <dd className="text-text mt-1 text-sm">
+                                {
+                                    STATUS_OPTIONS.find(
+                                        (option) => option.value === leaveRequest.status,
+                                    )?.label
+                                }
+                            </dd>
+                        </div>
 
-                <div className="flex justify-end gap-2 pt-4">
-                    <button
-                        type="button"
-                        onClick={() => navigate(-1)}
-                        className="rounded border px-4 py-1"
-                        disabled={submitting}
-                    >
-                        Batal
-                    </button>
-                    <button
-                        type="submit"
-                        className="rounded bg-blue-600 px-4 py-1 text-white disabled:opacity-50"
-                        disabled={submitting}
-                    >
-                        {submitting ? "Menyimpan..." : "Simpan"}
-                    </button>
+                        <div>
+                            <dt className="text-text-muted text-xs font-medium tracking-wide uppercase">
+                                Tanggal Mulai
+                            </dt>
+                            <dd className="text-text mt-1 text-sm">
+                                {new Date(leaveRequest.startDate).toLocaleDateString("id-ID")}
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt className="text-text-muted text-xs font-medium tracking-wide uppercase">
+                                Tanggal Berakhir
+                            </dt>
+                            <dd className="text-text mt-1 text-sm">
+                                {new Date(leaveRequest.endDate).toLocaleDateString("id-ID")}
+                            </dd>
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <dt className="text-text-muted text-xs font-medium tracking-wide uppercase">
+                                Alasan
+                            </dt>
+                            <dd className="text-text mt-1 text-sm whitespace-pre-wrap">
+                                {leaveRequest.reason || "Tidak ada alasan."}
+                            </dd>
+                        </div>
+                    </div>
+
+                    <div className="border-border border-t px-6 py-5">
+                        <label htmlFor="status" className="text-text block text-sm font-medium">
+                            Status Pengajuan
+                        </label>
+
+                        <p className="text-text-secondary mt-1 text-sm">
+                            Tentukan hasil review pengajuan cuti ini.
+                        </p>
+
+                        <select
+                            id="status"
+                            name="status"
+                            value={leaveRequest.status}
+                            onChange={handleStatusChange}
+                            disabled={submitting}
+                            className="border-border bg-surface text-text focus:border-accent focus:ring-accent-soft disabled:bg-bg mt-3 w-full rounded-md border px-3 py-2 text-sm transition outline-none focus:ring-2 disabled:cursor-not-allowed"
+                        >
+                            {STATUS_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+
+                        {submitError && (
+                            <p className="text-rejected-text mt-3 text-sm">{submitError}</p>
+                        )}
+                    </div>
+
+                    <div className="border-border flex flex-col-reverse gap-2 border-t px-6 py-4 sm:flex-row sm:justify-end">
+                        <button
+                            type="button"
+                            onClick={() => navigate(-1)}
+                            disabled={submitting}
+                            className="border-border text-text-secondary hover:bg-bg rounded-md border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Batal
+                        </button>
+
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="bg-accent hover:bg-accent-hover rounded-md px-4 py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {submitting ? "Menyimpan..." : "Simpan Review"}
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
