@@ -1,12 +1,12 @@
 import prisma from "../lib/prisma.js";
-import type { LeaveRequest } from "../generated/prisma/index.js";
+import type { LeaveRequest } from "@prisma/client";
 import type {
     CreateLeaveRequest,
     UpdateLeaveRequest,
     UpdateStatusLeaveRequest,
     LeaveRequestFilter,
     LeaveRequestResponse,
-} from "../types/leavelRequestTypes.js";
+} from "../types/leaveRequestTypes.js";
 
 export default class LeaveRequestRepository {
     private RelationsInclude = {
@@ -14,6 +14,7 @@ export default class LeaveRequestRepository {
             select: {
                 id: true,
                 name: true,
+                department: true,
                 user: {
                     select: {
                         id: true,

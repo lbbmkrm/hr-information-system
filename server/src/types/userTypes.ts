@@ -1,4 +1,4 @@
-import { Role } from "../generated/prisma/index.js";
+export type Role = "ADMIN" | "HR" | "EMPLOYEE";
 
 export interface User {
     id: string;

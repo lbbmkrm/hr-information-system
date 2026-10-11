@@ -6,7 +6,7 @@ import { createEmployee } from "../factories/index.js";
 import app from "../../src/app.js";
 import prisma from "../prisma.js";
 import { createUserWithToken } from "../factories/authHelper.js";
-import { Role } from "../../src/generated/prisma/index.js";
+import { Role } from "@prisma/client";
 
 describe("User API", () => {
     describe("POST /api/users", () => {

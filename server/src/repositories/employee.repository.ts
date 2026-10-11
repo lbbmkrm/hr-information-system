@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma.js";
-import type { Employee } from "../generated/prisma/index.js";
+import type { Employee } from "@prisma/client";
 import type {
     CreateEmployeeData,
     EmployeeFilter,

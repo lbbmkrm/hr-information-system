@@ -7,7 +7,7 @@ import prisma from "../prisma.js";
 import { createUserWithToken } from "../factories/authHelper.js";
 import { createEmployee } from "../factories/index.js";
 import { createLeaveRequest } from "../factories/index.js";
-import { Role, LeaveStatus } from "../../src/generated/prisma/index.js";
+import { Role, LeaveStatus } from "@prisma/client";
 
 describe("Leave Request API", () => {
     describe("POST /api/leave-requests", () => {

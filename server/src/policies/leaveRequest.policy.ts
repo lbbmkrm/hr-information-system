@@ -1,5 +1,5 @@
 import type { jwtPayload } from "../lib/jwt.js";
-import type { LeaveRequestResponse } from "../types/leavelRequestTypes.js";
+import type { LeaveRequestResponse } from "../types/leaveRequestTypes.js";
 import type { EmployeeResponse } from "../types/employeeTypes.js";
 
 export default class LeaveRequestPolicy {

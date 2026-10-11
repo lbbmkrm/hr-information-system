@@ -41,7 +41,10 @@ export default class EmployeeController {
     };
 
     public showByUser = async (req: Request, res: Response): Promise<Response> => {
-        const employee = await this.employeeService.getEmployeeByUserId(req.params.id as string);
+        const employee = await this.employeeService.getEmployeeByUserId(
+            req.user as jwtPayload,
+            req.params.id as string,
+        );
 
         return res.status(200).json({
             status: "success",

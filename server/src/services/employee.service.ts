@@ -62,10 +62,13 @@ export default class EmployeeService {
         return employee;
     }
 
-    async getEmployeeByUserId(id: string): Promise<EmployeeResponse> {
+    async getEmployeeByUserId(user: jwtPayload, id: string): Promise<EmployeeResponse> {
         const employee = await this.employeeRepository.findByUserId(id);
         if (!employee) {
             throw new AppError("Data karyawan untuk user ini tidak ditemukan", 404);
+        }
+        if (!EmployeePolicy.view(user, employee)) {
+            throw new AppError("Anda tidak memiliki izin untuk melihat data karyawan ini", 403);
         }
         return employee;
     }

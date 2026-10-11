@@ -1,13 +1,13 @@
 import LeaveRequestRepository from "../repositories/leaveRequest.repository.js";
 import EmployeeRepository from "../repositories/employee.repository.js";
-import type { LeaveRequest } from "../generated/prisma/index.js";
+import type { LeaveRequest } from "@prisma/client";
 import type {
     CreateLeaveRequest,
     UpdateLeaveRequest,
     UpdateStatusLeaveRequest,
     LeaveRequestFilter,
     LeaveRequestResponse,
-} from "../types/leavelRequestTypes.js";
+} from "../types/leaveRequestTypes.js";
 import AppError from "../utils/AppError.js";
 import EmployeeService from "./employee.service.js";
 import dateValidator from "../utils/dateValidator.js";

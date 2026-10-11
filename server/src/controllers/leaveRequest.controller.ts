@@ -1,12 +1,11 @@
 import LeaveRequestService from "../services/leaveRequest.service.js";
 import type { Request, Response } from "express";
-import type { LeaveRequest } from "../generated/prisma/index.js";
 import type {
     CreateLeaveRequest,
     LeaveRequestFilter,
     UpdateLeaveRequest,
     UpdateStatusLeaveRequest,
-} from "../types/leavelRequestTypes.js";
+} from "../types/leaveRequestTypes.js";
 import type { jwtPayload } from "../lib/jwt.js";
 
 export default class LeaveRequestController {
@@ -17,7 +16,7 @@ export default class LeaveRequestController {
     }
 
     public index = async (req: Request, res: Response): Promise<Response> => {
-        const leaveRequests: LeaveRequest[] = await this.leaveRequestService.getAllLeaveRequests(
+        const leaveRequests = await this.leaveRequestService.getAllLeaveRequests(
             req.user as jwtPayload,
             req.validatedQuery as LeaveRequestFilter,
         );

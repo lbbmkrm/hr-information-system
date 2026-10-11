@@ -1,5 +1,5 @@
 import prisma from "./../lib/prisma.js";
-import { type User, Prisma } from "./../generated/prisma/index.js";
+import { type User, Prisma } from "@prisma/client";
 import type {
     CreateUserData,
     GetUsersFilter,
@@ -38,6 +38,10 @@ export default class UserRepository {
             where.employee = null;
         } else if (filter?.assigned === true) {
             where.employee = { isNot: null };
+        }
+
+        if (filter?.role) {
+            where.role = filter.role;
         }
 
         if (filter?.createdAfter || filter?.createdBefore) {

@@ -10,7 +10,6 @@ import type {
 import UserPolicy from "../policies/user.policy.js";
 import AppError from "../utils/AppError.js";
 import bcrypt from "bcrypt";
-import type { User } from "../generated/prisma/index.js";
 
 export default class UserService {
     private userRepository: UserRepository;
@@ -65,6 +64,10 @@ export default class UserService {
         if (!user) {
             throw new AppError("User tidak ditemukan", 404);
         }
+        if (data.role && authenticatedUser.role !== "ADMIN") {
+            throw new AppError("Tidak dapat meng-update role.", 403);
+        }
+
         if (!UserPolicy.update(authenticatedUser, user)) {
             throw new AppError("Anda tidak memiliki izin untuk mengubah data user ini", 403);
         }
@@ -81,7 +84,7 @@ export default class UserService {
             throw new AppError("User tidak ditemukan", 404);
         }
 
-        if(authenticatedUser.userId === id) {
+        if (authenticatedUser.userId === id) {
             throw new AppError("Tidak dapat menghapus akun sendiri.", 400);
         }
 

@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import prisma from "../prisma.js";
 import { jwtSignature } from "../../src/lib/jwt.js";
-import type { Role } from "../../src/generated/prisma/index.js";
+import type { Role } from "@prisma/client";
 
 export async function createUserWithToken(overrides?: {
     email?: string;

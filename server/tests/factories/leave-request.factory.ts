@@ -1,5 +1,5 @@
 import prisma from "../prisma.js";
-import type { Prisma } from "../../src/generated/prisma/index.js";
+import type { Prisma } from "@prisma/client";
 
 export async function createLeaveRequest(
     employeeId: string,

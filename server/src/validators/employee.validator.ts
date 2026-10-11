@@ -7,7 +7,7 @@ export const CreateEmployeeSchema: ZodObject = z.object({
     department: z.string().trim().min(1).max(255),
     joinDate: z.coerce.date(),
     phone: z.string().trim().min(1).max(255).optional(),
-    userId: z.string().trim().min(1).max(255).optional(),
+    userId: z.string().trim().min(1).max(255).optional().nullable(),
 });
 
 export const UpdateEmployeeSchema: ZodObject = CreateEmployeeSchema.partial();

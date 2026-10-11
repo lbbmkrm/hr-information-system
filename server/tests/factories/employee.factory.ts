@@ -1,9 +1,7 @@
 import prisma from "../prisma.js";
-import type { Prisma } from "../../src/generated/prisma/index.js";
+import type { Prisma } from "@prisma/client";
 
-export async function createEmployee(
-    overrides: Partial<Prisma.EmployeeCreateInput> = {},
-) {
+export async function createEmployee(overrides: Partial<Prisma.EmployeeCreateInput> = {}) {
     return prisma.employee.create({
         data: {
             name: "John Doe",

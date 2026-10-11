@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -27,27 +26,27 @@ model User {
   email     String   @unique
   password  String
   role      Role     @default(EMPLOYEE)
-  createdAt DateTime @map("created_at") @default(now())
-  updatedAt DateTime @map("updated_at") @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  employee          Employee?
-  reviewedRequests  LeaveRequest[] @relation("ReviewedBy")
+  employee         Employee?
+  reviewedRequests LeaveRequest[] @relation("ReviewedBy")
 
   @@map("users")
 }
 
 model Employee {
   id         String   @id @default(cuid(2))
-  userId     String?   @map("user_id") @unique
+  userId     String?  @unique @map("user_id")
   name       String
   position   String
   department String
   joinDate   DateTime @map("join_date")
   phone      String?
-  createdAt  DateTime @map("created_at") @default(now())
-  updatedAt  DateTime @map("updated_at") @updatedAt
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
-  user          User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
   leaveRequests LeaveRequest[]
 
   @@map("employees")
@@ -61,8 +60,8 @@ model LeaveRequest {
   reason     String?
   status     LeaveStatus @default(PENDING)
   reviewedBy String?     @map("reviewed_by")
-  createdAt  DateTime    @map("created_at") @default(now())
-  updatedAt  DateTime    @map("updated_at") @updatedAt
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
 
   employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   reviewer User?    @relation("ReviewedBy", fields: [reviewedBy], references: [id], onDelete: SetNull)

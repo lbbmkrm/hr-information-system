@@ -1,11 +1,7 @@
-// tests/factories/user.factory.ts
-
 import prisma from "../prisma.js";
-import type { Prisma } from "../../src/generated/prisma/index.js";
+import type { Prisma } from "@prisma/client";
 
-export async function createUser(
-    overrides: Partial<Prisma.UserCreateInput> = {},
-) {
+export async function createUser(overrides: Partial<Prisma.UserCreateInput> = {}) {
     return prisma.user.create({
         data: {
             email: `user-${crypto.randomUUID()}@test.com`,

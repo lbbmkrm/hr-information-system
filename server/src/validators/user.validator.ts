@@ -1,5 +1,5 @@
 import z from "zod";
-import { Role } from "../generated/prisma/index.js";
+import { Role } from "@prisma/client";
 
 export const CreateUserSchema = z.object({
     email: z.email(),

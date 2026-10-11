@@ -1,4 +1,4 @@
-import type { Employee } from "../generated/prisma/index.js";
+import type { Employee } from "@prisma/client";
 import type { jwtPayload } from "../lib/jwt.js";
 
 export default class EmployeePolicy {

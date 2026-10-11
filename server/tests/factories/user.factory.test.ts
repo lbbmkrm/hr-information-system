@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Role } from "../../src/generated/prisma/index.js";
+import { Role } from "@prisma/client";
 import { createUser } from "./user.factory.js";
 
 describe("User Factory", () => {

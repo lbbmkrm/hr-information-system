@@ -24,12 +24,10 @@ describe("Auth API", () => {
         });
 
         it("should login with valid credentials", async () => {
-            const response = await request(app)
-                .post("/api/auth/login")
-                .send({
-                    email,
-                    password,
-                });
+            const response = await request(app).post("/api/auth/login").send({
+                email,
+                password,
+            });
 
             expect(response.status).toBe(200);
 
@@ -46,12 +44,10 @@ describe("Auth API", () => {
         });
 
         it("should reject wrong password", async () => {
-            const response = await request(app)
-                .post("/api/auth/login")
-                .send({
-                    email,
-                    password: "wrong-password",
-                });
+            const response = await request(app).post("/api/auth/login").send({
+                email,
+                password: "wrong-password",
+            });
 
             expect(response.status).toBe(401);
             expect(response.body.status).toBe("error");
@@ -70,46 +66,38 @@ describe("Auth API", () => {
         });
 
         it("should reject invalid email", async () => {
-            const response = await request(app)
-                .post("/api/auth/login")
-                .send({
-                    email: "invalid-email",
-                    password,
-                });
+            const response = await request(app).post("/api/auth/login").send({
+                email: "invalid-email",
+                password,
+            });
 
             expect(response.status).toBe(400);
             expect(response.body.status).toBe("error");
         });
 
         it("should reject missing email", async () => {
-            const response = await request(app)
-                .post("/api/auth/login")
-                .send({
-                    password,
-                });
+            const response = await request(app).post("/api/auth/login").send({
+                password,
+            });
 
             expect(response.status).toBe(400);
             expect(response.body.status).toBe("error");
         });
 
         it("should reject missing password", async () => {
-            const response = await request(app)
-                .post("/api/auth/login")
-                .send({
-                    email,
-                });
+            const response = await request(app).post("/api/auth/login").send({
+                email,
+            });
 
             expect(response.status).toBe(400);
             expect(response.body.status).toBe("error");
         });
 
         it("should return a JWT token", async () => {
-            const response = await request(app)
-                .post("/api/auth/login")
-                .send({
-                    email,
-                    password,
-                });
+            const response = await request(app).post("/api/auth/login").send({
+                email,
+                password,
+            });
 
             expect(response.status).toBe(200);
             expect(typeof response.body.data.token).toBe("string");
@@ -117,12 +105,10 @@ describe("Auth API", () => {
         });
 
         it("should not expose password in login response", async () => {
-            const response = await request(app)
-                .post("/api/auth/login")
-                .send({
-                    email,
-                    password,
-                });
+            const response = await request(app).post("/api/auth/login").send({
+                email,
+                password,
+            });
 
             expect(response.status).toBe(200);
             expect(response.body.data.user.password).toBeUndefined();

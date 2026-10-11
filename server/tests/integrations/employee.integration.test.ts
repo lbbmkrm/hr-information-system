@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import request from "supertest";
-import {createId} from "@paralleldrive/cuid2";
+import { createId } from "@paralleldrive/cuid2";
 
 import app from "../../src/app.js";
 import prisma from "../prisma.js";
 import { createUserWithToken } from "../factories/authHelper.js";
 import { createEmployee } from "../factories/index.js";
-import { Role } from "../../src/generated/prisma/index.js";
+import { Role } from "@prisma/client";
 
 describe("Employee API", () => {
     describe("POST /api/employees", () => {
@@ -44,14 +44,12 @@ describe("Employee API", () => {
         });
 
         it("should reject request without token", async () => {
-            const response = await request(app)
-                .post("/api/employees")
-                .send({
-                    name: "Budi Santoso",
-                    position: "Backend Developer",
-                    department: "Engineering",
-                    joinDate: "2026-01-01",
-                });
+            const response = await request(app).post("/api/employees").send({
+                name: "Budi Santoso",
+                position: "Backend Developer",
+                department: "Engineering",
+                joinDate: "2026-01-01",
+            });
 
             expect(response.status).toBe(401);
         });
@@ -134,7 +132,7 @@ describe("Employee API", () => {
             expect(response.status).toBe(403);
         });
 
-            it("should return 404 for non-existent employee id", async () => {
+        it("should return 404 for non-existent employee id", async () => {
             const { token } = await createUserWithToken({ role: Role.ADMIN });
             const fakeId = createId();
 

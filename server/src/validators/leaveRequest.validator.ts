@@ -1,6 +1,6 @@
 import z from "zod";
 import type { ZodObject } from "zod";
-import { LeaveStatus } from "../generated/prisma/index.js";
+import { LeaveStatus } from "@prisma/client";
 
 const endDateValidation = (value: { startDate?: Date; endDate?: Date }) => {
     if (value.endDate === undefined || value.startDate === undefined) return;

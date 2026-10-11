@@ -1,0 +1,1184 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "HR Information System API",
+    "version": "1.0.0",
+    "description": "Dokumentasi REST API untuk aplikasi HRIS. Semua path selain /auth/login memerlukan bearer JWT. Otorisasi tetap ditegakkan oleh server berdasarkan role dan kepemilikan resource."
+  },
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "Autentikasi pengguna"
+    },
+    {
+      "name": "Dashboard",
+      "description": "Ringkasan statistik dashboard"
+    },
+    {
+      "name": "Employees",
+      "description": "Pengelolaan data karyawan"
+    },
+    {
+      "name": "Leave Requests",
+      "description": "Pengajuan dan review cuti"
+    },
+    {
+      "name": "Users",
+      "description": "Pengelolaan akun pengguna"
+    }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "operationId": "login",
+        "summary": "Login",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/LoginData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "description": "Email atau password salah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/dashboard": {
+      "get": {
+        "tags": ["Dashboard"],
+        "operationId": "getDashboardStats",
+        "summary": "Statistik dashboard",
+        "description": "Mengambil jumlah karyawan, seluruh pengajuan cuti, dan pengajuan cuti yang menunggu review. Tersedia untuk semua pengguna yang terautentikasi.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Statistik dashboard berhasil dimuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/DashboardStats" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/employees": {
+      "get": {
+        "tags": ["Employees"],
+        "operationId": "listEmployees",
+        "summary": "Daftar karyawan",
+        "description": "Hanya ADMIN dan HR yang dapat melihat seluruh daftar karyawan.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "department",
+            "in": "query",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 255 }
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 255 }
+          },
+          {
+            "name": "joinDate",
+            "in": "query",
+            "description": "Tanggal mulai kerja dalam format tanggal yang dapat diparse oleh server.",
+            "schema": { "type": "string", "format": "date" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar karyawan berhasil dimuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Employee" }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Employees"],
+        "operationId": "createEmployee",
+        "summary": "Tambah karyawan",
+        "description": "Hanya ADMIN dan HR yang dapat menambahkan data karyawan.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateEmployeeRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Karyawan berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/Employee" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/employees/user/{id}": {
+      "get": {
+        "tags": ["Employees"],
+        "operationId": "getEmployeeByUserId",
+        "summary": "Cari data karyawan berdasarkan ID user",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/IdPath" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data karyawan ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/Employee" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/employees/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+      "get": {
+        "tags": ["Employees"],
+        "operationId": "getEmployee",
+        "summary": "Detail karyawan",
+        "description": "ADMIN dan HR dapat melihat data karyawan mana pun. EMPLOYEE hanya dapat melihat data yang terhubung ke akunnya.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Detail karyawan berhasil dimuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/Employee" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "patch": {
+        "tags": ["Employees"],
+        "operationId": "updateEmployee",
+        "summary": "Perbarui data karyawan",
+        "description": "ADMIN dan HR dapat memperbarui karyawan mana pun. EMPLOYEE hanya dapat memperbarui data miliknya.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateEmployeeRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data karyawan berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/EmployeeWithUser" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "delete": {
+        "tags": ["Employees"],
+        "operationId": "deleteEmployee",
+        "summary": "Hapus data karyawan",
+        "description": "Hanya ADMIN dan HR yang dapat menghapus data karyawan.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Data karyawan berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessageEnvelope" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/leave-requests": {
+      "get": {
+        "tags": ["Leave Requests"],
+        "operationId": "listLeaveRequests",
+        "summary": "Daftar semua pengajuan cuti",
+        "description": "Hanya HR yang dapat melihat semua pengajuan cuti.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Filter batas awal tanggal mulai pengajuan.",
+            "schema": { "type": "string", "format": "date" }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Filter batas akhir tanggal selesai pengajuan.",
+            "schema": { "type": "string", "format": "date" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar pengajuan cuti berhasil dimuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/LeaveRequest" }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Leave Requests"],
+        "operationId": "createLeaveRequest",
+        "summary": "Ajukan cuti",
+        "description": "HR dapat membuat pengajuan untuk karyawan. EMPLOYEE hanya dapat membuat untuk data karyawan yang terhubung ke akunnya.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateLeaveRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pengajuan cuti berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/LeaveRequest" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/leave-requests/employees/{id}": {
+      "get": {
+        "tags": ["Leave Requests"],
+        "operationId": "listEmployeeLeaveRequests",
+        "summary": "Daftar pengajuan cuti milik karyawan",
+        "description": "Akses mengikuti otorisasi detail karyawan: HR dapat melihat, sedangkan EMPLOYEE hanya dapat melihat pengajuan milik datanya sendiri.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "200": {
+            "description": "Daftar pengajuan karyawan berhasil dimuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/LeaveRequest" },
+                          "nullable": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/leave-requests/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+      "get": {
+        "tags": ["Leave Requests"],
+        "operationId": "getLeaveRequest",
+        "summary": "Detail pengajuan cuti",
+        "description": "HR dapat melihat pengajuan mana pun; pengguna lain hanya dapat melihat pengajuan yang terkait dengan data karyawannya.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Detail pengajuan berhasil dimuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/LeaveRequest" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "patch": {
+        "tags": ["Leave Requests"],
+        "operationId": "updateLeaveRequest",
+        "summary": "Perbarui pengajuan cuti",
+        "description": "Pemilik pengajuan dapat mengubah tanggal dan/atau alasan. Jika kedua tanggal dikirim, tanggal selesai tidak boleh lebih awal daripada tanggal mulai.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateLeaveRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pengajuan cuti berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/LeaveRequest" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "delete": {
+        "tags": ["Leave Requests"],
+        "operationId": "deleteLeaveRequest",
+        "summary": "Hapus pengajuan cuti",
+        "description": "Pemilik pengajuan dapat menghapus pengajuannya.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Pengajuan cuti berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessageEnvelope" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/leave-requests/{id}/review": {
+      "put": {
+        "tags": ["Leave Requests"],
+        "operationId": "reviewLeaveRequest",
+        "summary": "Review pengajuan cuti",
+        "description": "HR dapat mengubah status pengajuan karyawan lain. ReviewedBy diambil dari pengguna yang sedang login.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ReviewLeaveRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status pengajuan berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/LeaveRequest" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "operationId": "listUsers",
+        "summary": "Daftar user",
+        "description": "Hanya ADMIN yang dapat melihat seluruh daftar user.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "role",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/Role" }
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "assigned",
+            "in": "query",
+            "description": "Filter berdasarkan apakah user terhubung ke data karyawan.",
+            "schema": { "type": "boolean" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar user berhasil dimuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/UserListItem" }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "operationId": "createUser",
+        "summary": "Tambah user",
+        "description": "Hanya ADMIN yang dapat membuat user baru. Role default yang diterapkan database adalah EMPLOYEE.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateUserRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/UserDetail" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+      "get": {
+        "tags": ["Users"],
+        "operationId": "getUser",
+        "summary": "Detail user",
+        "description": "ADMIN dapat melihat semua user. Pengguna non-ADMIN hanya dapat melihat data akunnya sendiri.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Detail user berhasil dimuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/UserDetail" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "patch": {
+        "tags": ["Users"],
+        "operationId": "updateUser",
+        "summary": "Perbarui user",
+        "description": "ADMIN dapat memperbarui semua user. Pengguna non-ADMIN hanya dapat memperbarui datanya sendiri.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateUserRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/UserDetail" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "operationId": "deleteUser",
+        "summary": "Hapus user",
+        "description": "Hanya ADMIN yang dapat menghapus user. ADMIN tidak dapat menghapus akunnya sendiri.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "User berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessageEnvelope" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "IdPath": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "ID resource dengan format CUID2.",
+        "schema": { "type": "string", "minLength": 1 }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Request atau input tidak valid",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Token autentikasi tidak ada, tidak valid, atau kedaluwarsa",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Pengguna tidak memiliki izin untuk operasi ini",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource tidak ditemukan",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Operasi bertentangan dengan data yang sudah ada",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Kesalahan internal server",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Role": {
+        "type": "string",
+        "enum": ["ADMIN", "HR", "EMPLOYEE"]
+      },
+      "LeaveStatus": {
+        "type": "string",
+        "enum": ["PENDING", "APPROVED", "REJECTED"]
+      },
+      "DashboardStats": {
+        "type": "object",
+        "required": ["totalEmployees", "totalLeaveRequests", "pendingLeaveRequests"],
+        "properties": {
+          "totalEmployees": { "type": "integer", "minimum": 0 },
+          "totalLeaveRequests": { "type": "integer", "minimum": 0 },
+          "pendingLeaveRequests": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "SuccessEnvelope": {
+        "type": "object",
+        "required": ["status", "message", "data"],
+        "properties": {
+          "status": { "type": "string", "const": "success" },
+          "message": { "type": "string" },
+          "data": {}
+        }
+      },
+      "MessageEnvelope": {
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+          "status": { "type": "string", "const": "success" },
+          "message": { "type": "string" }
+        }
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+          "status": { "type": "string", "const": "error" },
+          "message": { "type": "string" }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 }
+        }
+      },
+      "LoginData": {
+        "type": "object",
+        "required": ["user", "token"],
+        "properties": {
+          "user": {
+            "type": "object",
+            "required": ["id", "email", "role"],
+            "properties": {
+              "id": { "type": "string" },
+              "email": { "type": "string", "format": "email" },
+              "role": { "$ref": "#/components/schemas/Role" }
+            }
+          },
+          "token": { "type": "string" }
+        }
+      },
+      "Employee": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "position",
+          "department",
+          "joinDate",
+          "phone",
+          "userId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "position": { "type": "string" },
+          "department": { "type": "string" },
+          "joinDate": { "type": "string", "format": "date-time" },
+          "phone": { "type": ["string", "null"] },
+          "userId": { "type": ["string", "null"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "EmployeeWithUser": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Employee" },
+          {
+            "type": "object",
+            "properties": {
+              "user": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/LinkedUser" },
+                  { "type": "null" }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "LinkedUser": {
+        "type": "object",
+        "required": ["id", "email", "role"],
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "$ref": "#/components/schemas/Role" }
+        }
+      },
+      "CreateEmployeeRequest": {
+        "type": "object",
+        "required": ["name", "position", "department", "joinDate"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "position": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "department": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "joinDate": { "type": "string", "format": "date" },
+          "phone": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "userId": { "type": "string", "minLength": 1, "maxLength": 255 }
+        },
+        "additionalProperties": false
+      },
+      "UpdateEmployeeRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "position": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "department": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "joinDate": { "type": "string", "format": "date" },
+          "phone": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "userId": { "type": "string", "minLength": 1, "maxLength": 255 }
+        }
+      },
+      "CreateLeaveRequest": {
+        "type": "object",
+        "required": ["employeeId", "startDate", "endDate"],
+        "properties": {
+          "employeeId": { "type": "string", "description": "CUID2 ID karyawan." },
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "reason": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "UpdateLeaveRequest": {
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "reason": { "type": ["string", "null"] }
+        }
+      },
+      "ReviewLeaveRequest": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": { "$ref": "#/components/schemas/LeaveStatus" }
+        },
+        "additionalProperties": false
+      },
+      "LeaveRequest": {
+        "type": "object",
+        "required": [
+          "id",
+          "employeeId",
+          "startDate",
+          "endDate",
+          "reason",
+          "status",
+          "reviewedBy",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "employeeId": { "type": "string" },
+          "startDate": { "type": "string", "format": "date-time" },
+          "endDate": { "type": "string", "format": "date-time" },
+          "reason": { "type": ["string", "null"] },
+          "status": { "$ref": "#/components/schemas/LeaveStatus" },
+          "reviewedBy": { "type": ["string", "null"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "employee": { "$ref": "#/components/schemas/EmployeeSummary" },
+          "reviewer": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/ReviewerSummary" },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "EmployeeSummary": {
+        "type": "object",
+        "required": ["id", "name", "user"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "user": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/EmployeeUserSummary" },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "EmployeeUserSummary": {
+        "type": "object",
+        "required": ["id", "email", "role", "createdAt", "updatedAt"],
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "$ref": "#/components/schemas/Role" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ReviewerSummary": {
+        "type": "object",
+        "required": ["id", "email", "role", "employee"],
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "$ref": "#/components/schemas/Role" },
+          "employee": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/ReviewerEmployeeSummary" },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "ReviewerEmployeeSummary": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      },
+      "UserListItem": {
+        "type": "object",
+        "required": ["id", "email", "role", "createdAt", "updatedAt", "employee"],
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "$ref": "#/components/schemas/Role" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "employee": { "type": ["object", "null"], "additionalProperties": true }
+        }
+      },
+      "UserDetail": {
+        "type": "object",
+        "required": ["id", "email", "role", "createdAt", "updatedAt", "employee"],
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "$ref": "#/components/schemas/Role" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "employee": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/UserEmployeeSummary" },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "UserEmployeeSummary": {
+        "type": "object",
+        "required": ["id", "name", "position", "department"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "position": { "type": "string" },
+          "department": { "type": "string" }
+        }
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 },
+          "role": { "$ref": "#/components/schemas/Role" }
+        }
+      }
+    }
+  }
+}
